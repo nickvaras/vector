@@ -195,7 +195,7 @@ class VectorMoveBase():
         Start the action server
         """
         self.action_ = MoveBaseAction()        
-        self.move_base_server = actionlib.SimpleActionServer("vector_move_base", MoveBaseAction,execute_cb=self._execute_goal, auto_start = False)
+        self.move_base_server = actionlib.SimpleActionServer("/vector_move_base", MoveBaseAction,execute_cb=self._execute_goal, auto_start = False)
         self.move_base_server.register_preempt_callback(self._preempt_cb)
         self.move_base_server.start()
         

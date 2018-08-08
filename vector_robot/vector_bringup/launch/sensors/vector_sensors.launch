@@ -5,8 +5,8 @@
     <group unless="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
         <node pkg="sick_tim" type="sick_tim551_2050001" name="front_laser_node" clear_params="true" respawn="true">
             <remap from="scan" to="/vector/front_scan" />
-            <param name="max_ang" value="2.35619449019"/>
-            <param name="min_ang" value="-2.35619449019"/>
+            <param name="max_ang" value="$(optenv LASER1_MAX_ANGLE 2.235)"/>
+            <param name="min_ang" value="$(optenv LASER1_MIN_ANGLE -2.235)"/>
             <param name="intensity" type="bool" value="true" />
             <param name="skip" type="int" value="0" />
             <param name="frame_id" type="str" value="front_laser_link" />
@@ -22,15 +22,15 @@
 
         <node pkg="sick_tim" type="sick_tim551_2050001" name="rear_laser_node" respawn="false">
             <remap from="scan" to="/vector/rear_scan" />
-            <param name="max_ang" value="2.35619449019"/>
-            <param name="min_ang" value="-2.35619449019"/>
+            <param name="max_ang" value="$(optenv LASER2_MAX_ANGLE 2.235)"/>
+            <param name="min_ang" value="$(optenv LASER2_MIN_ANGLE -2.235)"/>
             <param name="intensity" type="bool" value="true" />
             <param name="skip" type="int" value="0" />
             <param name="frame_id" type="str" value="rear_laser_link" />
             <param name="time_offset" type="double" value="-0.001" />
             <param name="publish_datagram" type="bool" value="false" />
             <param name="subscribe_datagram" type="bool" value="false" />
-            <param name="range_min" type="double" value="$(optenv LASER1_MIN_RANGE 0.05)" />
+            <param name="range_min" type="double" value="$(optenv LASER2_MIN_RANGE 0.05)" />
             <param name="range_max" type="double" value="$(optenv LASER2_MAX_RANGE 10.0)" />
             <param name="hostname" type="string" value="10.66.171.9" />
             <param name="port" type="string" value="2112" />
@@ -50,8 +50,8 @@
             <param name="calibrate_time" value="false"/>
             <param name="publish_intensity" value="true"/>
             <param name="publish_multiecho" value="false"/>
-            <param name="angle_min" value="-2.35619449"/>
-            <param name="angle_max" value="2.23619449"/>
+            <param name="angle_min" value="$(optenv LASER1_MIN_ANGLE -2.235)"/>
+            <param name="angle_max" value="$(optenv LASER1_MAX_ANGLE 2.235)"/>
         </node>
         
         <node name="rear_laser_node" pkg="urg_node" type="urg_node" output="screen">
@@ -62,16 +62,94 @@
             <param name="calibrate_time" value="false"/>
             <param name="publish_intensity" value="true"/>
             <param name="publish_multiecho" value="false"/>
-            <param name="angle_min" value="-2.35619449"/>
-            <param name="angle_max" value="2.23619449"/>
+            <param name="angle_min" value="$(optenv LASER2_MIN_ANGLE -2.235)"/>
+            <param name="angle_max" value="$(optenv LASER2_MAX_ANGLE 2.235)"/>
         </node>
     </group>
+
+	<node pkg="si_utils" type="laserscan_to_pcl2" name="front_scan_to_pcl2">
+	    <remap from="scan" to="/vector/front_scan"/>
+	    <remap from="points2" to="/vector/front_scan_points2"/>
+	</node>
+
+	<node name="front_scan_statistical_outlier_removal" pkg="nodelet" type="nodelet"
+        args="standalone pcl/StatisticalOutlierRemoval">
+		<remap from="~input" to="/vector/front_scan_points2" />
+		<remap from="~output" to="/vector/filtered_front_scan_points2" />
+		<rosparam>mean_k: 50</rosparam>
+		<rosparam>stddev: 2.0</rosparam>
+	</node>
+	
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="front_pointcloud_to_laserscan">
+        <remap from="cloud_in" to="/vector/filtered_front_scan_points2"/>
+        <remap from="scan" to="/vector/filtered_front_scan"/>
+        <rosparam>
+            target_frame: base_link # Leave disabled to output scan in pointcloud frame
+            transform_tolerance: 0.01
+            min_height: 0.0
+            max_height: 2.0
+
+            angle_min: -3.14
+            angle_max: 3.14
+            angle_increment: 0.005759587
+            scan_time: 0.066666667
+            range_min: 0.1
+            range_max: 25.0
+            use_inf: true
+            inf_epsilon: 1.0
+
+            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+            # 0 : Detect number of cores
+            # 1 : Single threaded
+            # 2->inf : Parallelism level
+            concurrency_level: 1
+        </rosparam>
+    </node>
+    
+	<node pkg="si_utils" type="laserscan_to_pcl2" name="rear_scan_to_pcl2">
+	    <remap from="scan" to="/vector/rear_scan"/>
+	    <remap from="points2" to="/vector/rear_scan_points2"/>
+	</node>
+
+	<node name="rear_scan_statistical_outlier_removal" pkg="nodelet" type="nodelet"
+        args="standalone pcl/StatisticalOutlierRemoval">
+		<remap from="~input" to="/vector/rear_scan_points2" />
+		<remap from="~output" to="/vector/filtered_rear_scan_points2" />
+		<rosparam>mean_k: 50</rosparam>
+		<rosparam>stddev: 2.0</rosparam>
+	</node>
+	
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="rear_pointcloud_to_laserscan">
+        <remap from="cloud_in" to="/vector/filtered_rear_scan_points2"/>
+        <remap from="scan" to="/vector/filtered_rear_scan"/>
+        <rosparam>
+            target_frame: base_link # Leave disabled to output scan in pointcloud frame
+            transform_tolerance: 0.01
+            min_height: 0.0
+            max_height: 2.0
+
+            angle_min: -3.14
+            angle_max: 3.14
+            angle_increment: 0.005759587
+            scan_time: 0.066666667
+            range_min: 0.1
+            range_max: 25.0
+            use_inf: true
+            inf_epsilon: 1.0
+
+            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+            # 0 : Detect number of cores
+            # 1 : Single threaded
+            # 2->inf : Parallelism level
+            concurrency_level: 1
+        </rosparam>
+    </node>
     
     <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
         <param name="destination_frame" value="base_link"/>
         <param name="cloud_destination_topic" value="/vector/merged_cloud"/>
         <param name="scan_destination_topic" value="/vector/combined_scan"/>
-        <param name="laserscan_topics" value ="/vector/front_scan /vector/rear_scan"/>
+        <param name="laserscan_topics" value ="/vector/filtered_front_scan /vector/filtered_rear_scan"/>
     </node>
     
     <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="base_laser_filter" clear_params="true" respawn="true">
@@ -82,19 +160,6 @@
         <rosparam command="load" 
             file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter.yaml" />
     </node>
-
-	<node pkg="si_utils" type="laserscan_to_pcl2" name="laserscan_to_pcl2" output="screen">
-	    <remap from="scan" to="/vector/base_scan_filtered"/>
-	    <remap from="points2" to="/vector/scan_multi_points2"/>
-	</node>
-	
-	<node name="statistical_outlier_removal" pkg="nodelet" type="nodelet"
-        args="standalone pcl/StatisticalOutlierRemoval">
-		<remap from="~input" to="/vector/scan_multi_points2" />
-		<remap from="~output" to="/vector/filtered_scan_points2" />
-		<rosparam>mean_k: 2</rosparam>
-		<rosparam>stddev: 0.3</rosparam>
-	</node>	
     
 </launch> 
     
