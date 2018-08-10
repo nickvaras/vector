@@ -1,0 +1,25 @@
+    
+<launch>
+    
+    <node pkg="joy" type="joy_node" name="joy_node">
+        <param name="dev" type="string" value="$(optenv VECTOR_JOY_DEV /dev/input/js0)" />
+        <param name="deadzone" type="double" value="$(optenv VECTOR_JOY_DEADZONE 0.1)" />
+        <param name="autorepeat_rate" type="double" value="50" />
+    </node>
+    
+    <node pkg="vector_ros" ns="vector" type="vector_teleop" name="vector_teleop" output="screen">
+        <rosparam file="$(find vector_bringup)/launch/teleop/config/$(optenv VECTOR_JOY_MAPPING xbox360).yaml" command="load"/>
+        <param name="sim" value="true"/>
+    </node>
+    
+    <node pkg="vector_ros" ns="vector" type="vector_marker_ctrl" name="vector_marker_ctrl" output="screen">
+        <param name="sim" value="true"/>
+    </node>
+    
+    <group ns="vector">
+        <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager"/>
+        <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" args="load yocs_cmd_vel_mux/CmdVelMuxNodelet nodelet_manager">
+            <param name="yaml_cfg_file" value="$(find vector_bringup)/launch/teleop/config/cmd_vel_mux.yaml"/>
+        </node>
+    </group>
+</launch>

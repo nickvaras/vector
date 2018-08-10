@@ -1,4 +1,4 @@
-<!-- Launch file for Segway teleop startup -->
+<!-- Launch file for Vector teleop startup -->
 
 <launch>
     <arg name="sim" default="false"/>

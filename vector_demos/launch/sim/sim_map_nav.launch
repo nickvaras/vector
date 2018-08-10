@@ -1,0 +1,23 @@
+ <launch>
+ 	
+    <!-- Bring up the platform in sim with all models, controllers, sensors estimates -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="1 vector_gazebo vector_test_zone.launch"
+        name="sim_bringup" output="screen"/>
+        
+    <!-- Bring up the joystick for control -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="7 vector_demos sim_basic_teleop.xml"
+        name="teleop_bringup" output="screen"/>
+        
+    <!-- Bring up navigation -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="15 vector_demos map_nav.launch sim:=true map_file:=test_zone"
+        name="mapping_bringup" output="screen"/> 
+        
+    <!-- Bring up the demo -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="18 vector_viz view_robot.launch function:=map_nav"
+        name="viz_bringup" output="screen"/>
+
+</launch>

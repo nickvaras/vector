@@ -1,0 +1,18 @@
+ <launch>
+
+    <!-- Bring up the joystick for control -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="1 vector_remote_teleop vector_remote_teleop.launch"
+        name="joy_bringup" output="screen" unless="$(optenv VECTOR_HAS_ONBOARD_JOY false)"/>
+
+    <!-- Bring up the demo -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="2 vector_demos sensor_nav.launch sim:=false local:=false"
+        name="nav_bringup" output="screen"/>
+        
+    <!-- Bring up the rviz GUI -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="5 vector_viz view_robot.launch function:=sensor_nav"
+        name="viz_bringup" output="screen"/>
+
+</launch>

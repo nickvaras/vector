@@ -1,0 +1,27 @@
+<!-- Assisted teleop demo -->
+
+<launch>
+    <arg name="local" default="true"/>
+
+    <machine name="vector1" address="vector1" user="vector" 
+               env-loader="/home/vector/env.sh" default="true" unless="$(arg local)"/>
+               
+    <node pkg="vector_assisted_teleop" name="vector_assisted_teleop" type="vector_assisted_teleop" clear_params="true" respawn="false">
+    
+        <param name="controller_frequency" value="10.0"/>
+        <param name="num_th_samples" value="20"/>
+        <param name="num_x_samples" value="6" />
+        <param name="diff_drive" value="false" />
+        <param name="theta_range" value="3.14" />
+        <param name="translational_collision_speed" value="0.0"/>
+        <param name="rotational_collision_speed" value="1.0" />
+        
+        <rosparam file="$(find vector_demos)/config/assisted_teleop/base_planner_params.yaml" command="load"/>
+        <rosparam file="$(find vector_demos)/config/assisted_teleop/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find vector_demos)/config/assisted_teleop/costmap_local.yaml" command="load"/>
+        <remap from="teleop_cmd_vel" to="/vector/teleop/cmd_vel" />
+        <remap from="cmd_vel" to="/vector/assisted_teleop/cmd_vel" />
+    </node>
+    
+
+</launch>

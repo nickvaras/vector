@@ -1,4 +1,4 @@
-<!-- Launch file for Segway platform startup -->
+<!-- Launch file for Vector platform startup -->
 <launch>
     <!--System watchdog-->
     <node pkg="vector_ros" type="vector_wd" name="vector1_wd" output="screen" if="$(optenv VECTOR_POWERS_PC_ONBOARD false)"/>

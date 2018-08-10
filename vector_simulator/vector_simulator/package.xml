@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <name>vector_simulator</name>
+  <version>1.0.0</version>
+  <description>Metapackage for Waypoint Vector gazebo simulation</description>
+
+  <maintainer email="dev@waypointrobotics.com">Patrick Hussey</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.wiki.org/Robots/RMPv3</url>
+  <url type="bugtracker">https://github.com/WaypointRobotics/vector/issues</url>
+  <url type="repository">https://github.com/WaypointRobotics/vector</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>vector_gazebo</run_depend>
+  <run_depend>vector_gazebo_plugins</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

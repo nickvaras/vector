@@ -1,0 +1,27 @@
+<!-- 2D Mapless navigation Demo -->
+
+<launch>
+    <arg name="sim" default="false"/>
+    <arg name="use_waypoints" default="false"/>
+    <arg name="local" default="true"/>
+
+    <machine name="vector1" address="vector1" user="vector" 
+               env-loader="/home/vector/env.sh" default="true" unless="$(arg local)"/>
+
+    <!-- Run vector_move_base action client for tracking status -->
+    <node pkg="vector_ros" name="vector_move_base" type="vector_move_base" output="screen" clear_params="true"> 
+        <param name="using_amcl" value="false"/>
+        <param name="global_frame" value="/odom"/>
+        <param name="goal_timeout_sec" value="300"/>
+        <param name="load_waypoints" value="$(arg use_waypoints)"/>
+        <param name="sim" value="$(arg sim)"/>
+    </node>
+     
+    <!--- Run Move Base -->
+    <include file="$(find vector_demos)/launch/nav/move_base.launch">
+        <arg name="no_static_map" value="true"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="sim" value="$(arg sim)"/>
+    </include>
+    
+</launch>

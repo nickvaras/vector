@@ -5,7 +5,7 @@
     <description>
         The vector_upstart package is a modified version of robot_upstart which is tailored specifically
         for bringing up Stanley Innovation Vector platforms the original author, Mike Purvis, maintains robot_upstart
-        separately from this package, this package should only be used with Segway based platforms 
+        separately from this package, this package should only be used with Vector based platforms 
     </description>
 
     <maintainer email="dev@stanleyinnovation.com">Patrick Hussey</maintainer>

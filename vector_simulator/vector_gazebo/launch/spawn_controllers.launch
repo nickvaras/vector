@@ -1,0 +1,8 @@
+<launch>
+    <rosparam file="$(find vector_gazebo)/controller/joint_state_controller.yaml" command="load"/>
+
+    <node name="base_controller_spawner" pkg="controller_manager" 
+          type="spawner" args="--stopped
+                               joint_state_controller" output="screen"/>
+
+</launch>

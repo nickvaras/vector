@@ -2,7 +2,7 @@
 <package>
     <name>vector_network</name>
     <version>0.0.1</version>
-    <description>Network Configuration for Segway RMP V3 platforms</description>
+    <description>Network Configuration for Vector platforms</description>
     
     <maintainer email="dev@stanleyinnovation.com">Patrick Hussey</maintainer>
     <author>Patrick Hussey</author>

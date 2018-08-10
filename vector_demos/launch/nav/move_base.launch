@@ -1,0 +1,57 @@
+<!-- Move Base launch file -->
+
+<launch>
+                 
+    <arg name="no_static_map" default="true"/>
+    <arg name="global_frame" default="map" />
+    <arg name="map_topic" default="/map" />
+    <arg name="sim" default="false" />
+    <arg name="local_planner" default="eband"/>
+    <arg name="local" default="true" />
+
+    <machine name="vector1" address="vector1" user="vector" 
+               env-loader="/home/vector/env.sh" default="true" unless="$(arg local)"/>
+
+    <node pkg="move_base" type="move_base" name="move_base" clear_params="true">
+    <!-- Remap into correct namespace for mux -->
+        <remap from="cmd_vel" to="/vector/navigation/cmd_vel" />
+        
+        <!-- Change the name of the move_base; it is first checked and handled by the client that we're using -->
+		<remap from="move_base/goal" to="move_base_navi/goal" />
+		<remap from="move_base/result" to="move_base_navi/result" />
+		<remap from="move_base/feedback" to="move_base_navi/feedback" />
+		<remap from="move_base/status" to="move_base_navi/status" />
+		<remap from="move_base/cancel" to="move_base_navi/cancel" />
+		<remap from="move_base_simple/goal" to="move_base_navi_simple/goal"/>
+		
+        <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/mblp.yaml" command="load"/>
+		<remap from="/odom" to="/vector/odometry/local_filtered" />
+        
+        <!-- Load common configuration files -->
+        <rosparam file="$(find vector_demos)/config/nav/global_planner_params.yaml" command="load" />
+        <rosparam file="$(find vector_demos)/config/nav/move_base_params.yaml" command="load" />
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/local_planner_params.yaml" command="load"/>
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/costmap_common_params.yaml" command="load" ns="global_costmap" unless="$(arg sim)"/>
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/costmap_common_params.yaml" command="load" ns="local_costmap" unless="$(arg sim)"/>
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/sim_costmap_common_params.yaml" command="load" ns="global_costmap" if="$(arg sim)"/>
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/sim_costmap_common_params.yaml" command="load" ns="local_costmap" if="$(arg sim)"/>
+
+        <!-- Load global/local costmap specific parameters -->
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/costmap_local.yaml" command="load"/>
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/costmap_global_sensors.yaml" command="load" if="$(arg no_static_map)"/>
+        <rosparam file="$(find vector_demos)/config/nav/$(arg local_planner)/costmap_global_map.yaml" command="load" unless="$(arg no_static_map)"/>
+
+        <param name="global_costmap/map_topic" value="$(arg map_topic)" unless="$(arg no_static_map)" />
+        
+        <param name="local_costmap/global_frame" value="map" unless="$(arg no_static_map)" />
+        <param name="global_costmap/global_frame" value="map" unless="$(arg no_static_map)" />
+        <param name="local_costmap/global_frame" value="odom" if="$(arg no_static_map)" />
+        <param name="global_costmap/global_frame" value="odom" if="$(arg no_static_map)" />
+
+    </node>
+    
+</launch> 
+           
+
+

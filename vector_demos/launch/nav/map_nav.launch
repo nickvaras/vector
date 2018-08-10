@@ -1,0 +1,38 @@
+<!-- 2D Map navigation Demo -->
+
+<launch>
+    <arg name="map_file" default="test_zone"/>
+    <arg name="use_waypoints" default="false"/>
+    <arg name="sim" default="false"/>
+    <arg name="local" default="true"/>
+    <arg name="user" default="$(env USER)"/>
+
+    <machine name="vector1" address="vector1" user="vector" 
+               env-loader="/home/vector/env.sh" default="true" unless="$(arg local)"/>
+
+    <!-- Run the map server -->
+    <node name="map_server" pkg="map_server" type="map_server" args="/home/$(arg user)/vector_ws/src/vector_demos/maps/$(arg map_file).yaml" />
+
+    <!-- Run vector_move_base action client for tracking status -->
+    <node pkg="vector_ros" name="vector_move_base" type="vector_move_base" output="screen" clear_params="true"> 
+        <param name="using_amcl" value="true"/>
+        <param name="global_frame" value="/map"/>
+        <param name="goal_timeout_sec" value="300"/>
+        <param name="load_waypoints" value="$(arg use_waypoints)"/>
+        <param name="sim" value="$(arg sim)"/>
+    </node>
+       
+    <!--- Run amcl -->
+    <node pkg="amcl" type="amcl" name="amcl" output="screen" clear_params="true">
+        <rosparam command="load" file="$(find vector_demos)/config/nav/amcl.yaml"/>
+        <remap from="scan" to="/vector/base_scan_filtered" />
+    </node>
+
+    <!--- Run Move Base -->
+    <include file="$(find vector_demos)/launch/nav/move_base.launch">
+        <arg name="no_static_map" value="false"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="sim" value="$(arg sim)"/>
+    </include>
+    
+</launch>

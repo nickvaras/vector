@@ -1,0 +1,26 @@
+<!-- GMAPPING SLAM Demo -->
+
+<launch>
+    <arg name="assisted_teleop" default="false"/>
+    <arg name="sensor_nav" default="false"/>
+    <arg name="local" default="true"/>
+
+    <machine name="vector1" address="vector1" user="vector" 
+               env-loader="/home/vector/env.sh" default="true" unless="$(arg local)"/>
+    
+    <!--- Run Assisted Teleop -->
+    <include file="$(find vector_demos)/launch/assisted_teleop.launch" if="$(arg assisted_teleop)" >
+        <arg name="local" value="$(arg local)"/>
+    </include>
+    
+    <include file="$(find vector_demos)/launch/sensor_nav.launch" if="$(arg sensor_nav)" >
+        <arg name="local" value="$(arg local)"/>
+    </include>
+       
+    <!--- Run gmapping -->
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping">
+        <rosparam command="load" file="$(find vector_demos)/config/nav/gmapping.yaml"/>
+        <remap from="scan" to="/vector/base_scan_filtered" />
+    </node>
+
+</launch>

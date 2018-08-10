@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <env name="GAZEBO_MODEL_PATH" value="$(find vector_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)" />
+    <param name="use_sim_time" value="true" />
+
+    <include file="$(find vector_gazebo)/launch/vector.launch">
+        <arg name="world" value="$(find vector_gazebo)/worlds/test_zone.sdf"/>
+    </include>
+
+</launch>
