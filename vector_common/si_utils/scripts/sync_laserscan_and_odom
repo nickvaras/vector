@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+"""--------------------------------------------------------------------
+COPYRIGHT 2018 Waypoint Robotics Inc.
+
+Software License Agreement:
+
+The software supplied herewith by Waypoint Robotics Inc. (the "Company") 
+for its licensed SI Vector Platform is intended and supplied to you, 
+the Company's customer, for use solely and exclusively with Waypoint Robotics 
+products. The software is owned by the Company and/or its supplier, and is 
+protected under applicable copyright laws.  All rights are reserved. Any use in 
+violation of the foregoing restrictions may subject the user to criminal 
+sanctions under applicable laws, as well as to civil liability for the 
+breach of the terms and conditions of this license. The Company may 
+immediately terminate this Agreement upon your use of the software with 
+any products that are not Waypoint Robotics products.
+
+The software was written using Python programming language.  Your use 
+of the software is therefore subject to the terms and conditions of the 
+OSI- approved open source license viewable at http://www.python.org/.  
+You are solely responsible for ensuring your compliance with the Python 
+open source license.
+
+You shall indemnify, defend and hold the Company harmless from any claims, 
+demands, liabilities or expenses, including reasonable attorneys fees, incurred 
+by the Company as a result of any claim or proceeding against the Company 
+arising out of or based upon: 
+
+(i) The combination, operation or use of the software by you with any hardware, 
+    products, programs or data not supplied or approved in writing by the Company, 
+    if such claim or proceeding would have been avoided but for such combination, 
+    operation or use.
+ 
+(ii) The modification of the software by or on behalf of you 
+
+(iii) Your use of the software.
+
+ THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTIES,
+ WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED
+ TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,
+ IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR
+ CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+ 
+ \file   sync_laserscan_and_odom.py
+
+ \brief  This node serves to setup simulation 
+
+ \Platform: Linux/ROS Indigo
+--------------------------------------------------------------------"""
+import rospy
+from sensor_msgs.msg import LaserScan
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Pose
+import threading
+import tf
+import tf2_ros
+from tf2_msgs.msg import TFMessage
+
+class SyncUISrcs(object):
+    def __init__(self):
+    
+        """
+        Setup a lock for accessing data in the control loop
+        """
+        self._lock = threading.Lock()
+        
+        
+        self.laser_pub = rospy.Publisher('/vector/base_scan_filtered_throttle',LaserScan,queue_size=1)
+        self.tfBuffer = tf2_ros.Buffer()
+        self.tflistener = tf2_ros.TransformListener(self.tfBuffer)
+        self.robot_pose_publisher = rospy.Publisher('/robot_pose',Pose, queue_size=1)
+        self._t1 = rospy.Timer(rospy.Duration(0.3),self._run)
+    
+    def Stop(self):
+        with self._lock:
+            self._t1.shutdown()
+            self.laser_pub.unregister()
+            self.robot_pose_publisher.unregister()
+    
+    def _run(self,event):
+        with self._lock:
+            try:
+                laser_message = rospy.wait_for_message('/vector/base_scan_filtered', LaserScan, timeout=0.2)
+                trans = self.tfBuffer.lookup_transform('odom', 'base_link', rospy.Time(), rospy.Duration(0.4))
+                msg = Pose()
+
+                msg.position.x = trans.transform.translation.x
+                msg.position.y = trans.transform.translation.y
+                msg.orientation.z = trans.transform.rotation.z
+                msg.orientation.w = trans.transform.rotation.w
+                self.robot_pose_publisher.publish(msg)
+                self.laser_pub.publish(laser_message)
+            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                pass
+ 
+if __name__ == "__main__":
+    rospy.init_node('sync_laserscan_and_odom')
+    sync = SyncUISrcs()
+    rospy.on_shutdown(sync.Stop)
+    rospy.spin()
