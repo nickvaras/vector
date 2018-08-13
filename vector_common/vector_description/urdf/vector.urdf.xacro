@@ -39,7 +39,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 		<odometryRate>100.0</odometryRate>
 		<robotBaseFrame>base_link</robotBaseFrame>
 		<publishOdometryTf>1</publishOdometryTf>
-		<yaw_velocity_p_gain>500.0</yaw_velocity_p_gain>
+		<yaw_velocity_p_gain>8000.0</yaw_velocity_p_gain>
 		<x_velocity_p_gain>10000.0</x_velocity_p_gain>
 		<y_velocity_p_gain>10000.0</y_velocity_p_gain>
 	    </plugin>

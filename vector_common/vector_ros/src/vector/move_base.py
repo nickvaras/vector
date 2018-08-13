@@ -89,7 +89,7 @@ class VectorMoveBase():
 
         
         rospack = rospkg.RosPack()
-        self.goals_filename = rospack.get_path('vector_navigation_apps') + "/goals/" + rospy.get_param("~goalfile", "vector_goals")  + ".txt"
+        self.goals_filename = rospack.get_path('vector_demos') + "/goals/" + rospy.get_param("~goalfile", "vector_goals")  + ".txt"
         
         """
         Goal state return values
