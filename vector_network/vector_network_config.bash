@@ -33,7 +33,7 @@ else
         fi
     else
         #No interface on the vector1 network; default simulation settings
-        export ROBOT_NETWORK=eth0
+        export ROBOT_NETWORK=lo
         export ROS_IP=$(ip -4 address show $ROBOT_NETWORK | grep 'inet' | sed 's/.*inet \([0-9\.]\+\).*/\1/')
         export ROS_MASTER_URI=http://$ROS_IP:11311/            
     fi
