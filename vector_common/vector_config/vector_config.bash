@@ -20,19 +20,4 @@ export VECTOR_JOY_DEADZONE=0.1
 #Used to determine if the system is equipped with saftey lasers 
 export VECTOR_HAS_SAFETY_LASERS=false
 
-# laser configuration (only supports two by default)
-export LASER1_XYZ="0.3385 0 0.1439106"
-export LASER1_RPY="3.1415 0 0"
-export LASER1_MAX_RANGE=20.0
-export LASER1_MIN_RANGE=0.05
-export LASER1_MAX_ANGLE=2.0
-export LASER1_MIN_ANGLE=-2.0
-
-export LASER2_XYZ="-0.3385 0 0.1439106"
-export LASER2_RPY="3.1415 0 3.1415"
-export LASER2_MAX_RANGE=10.0
-export LASER2_MIN_RANGE=0.01
-export LASER2_MAX_ANGLE=2.0
-export LASER2_MIN_ANGLE=-2.0
-
 

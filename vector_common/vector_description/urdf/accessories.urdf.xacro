@@ -55,11 +55,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
             
         <xacro:unless value="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
             <xacro:sick_tim laser_prefix="front" parent="base_chassis_link">
-                <origin xyz="0.3075 0 0.1439106" rpy="3.14159 0 0" />
+                <origin xyz="0.2525 0.1918 0.13791" rpy="${M_PI} 0 ${M_PI/4}" />
             </xacro:sick_tim>
             
             <xacro:sick_tim laser_prefix="rear" parent="base_chassis_link">
-                <origin xyz="-0.3075 0 0.1439106" rpy="3.14159 0 3.14159" />
+                <origin xyz="-0.2525 -0.1918 0.13791" rpy="${M_PI} 0 ${5*M_PI/4}" />
             </xacro:sick_tim>
         </xacro:unless>
 
