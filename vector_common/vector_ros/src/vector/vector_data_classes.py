@@ -358,13 +358,17 @@ class Vector_Configuration:
         self._MsgData.teleop_y_vel_limit_mps = data[1]
         self._MsgData.teleop_accel_limit_mps2 = data[2]
         self._MsgData.teleop_yaw_rate_limit_rps = data[3]
-        self._MsgData.teleop_yaw_accel_limit_rps2 = data[4] 
-        
+        self._MsgData.teleop_yaw_accel_limit_rps2 = data[4]
+        self._MsgData.jog_velocity_mps = data[5]
+        self._MsgData.jog_yaw_rate_rps = data[6]
+         
         self._MsgData1.teleop_x_vel_limit_mps = data[0]
         self._MsgData1.teleop_y_vel_limit_mps = data[1]
         self._MsgData1.teleop_accel_limit_mps2 = data[2]
         self._MsgData1.teleop_yaw_rate_limit_rps = data[3]
-        self._MsgData1.teleop_yaw_accel_limit_rps2 = data[4]            
+        self._MsgData1.teleop_yaw_accel_limit_rps2 = data[4]
+        self._MsgData1.jog_velocity_mps = data[5]
+        self._MsgData1.jog_yaw_rate_rps = data[6]            
 
     def parse(self,data,header_stamp):
         self._MsgData.header.stamp = header_stamp

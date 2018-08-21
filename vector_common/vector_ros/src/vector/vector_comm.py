@@ -88,8 +88,6 @@ class VectorDriver:
         self.start_frequency_samp = False
         self.need_to_terminate = False
         self.flush_rcvd_data=True
-        self.update_base_local_planner = False
-        self.last_move_base_update = rospy.Time.now().to_sec()
 
         """
         Initialize the publishers for VECTOR
@@ -148,7 +146,6 @@ class VectorDriver:
         self.subs = [0]*5
         self.subs[0] = rospy.Subscriber("/vector/cmd_vel", Twist, self._add_motion_command_to_queue)
         self.subs[1] = rospy.Subscriber("/vector/gp_command",ConfigCmd,self._add_config_command_to_queue)
-        self.subs[2] = rospy.Subscriber("/move_base/DWAPlannerROS/parameter_updates",Config,self._update_move_base_params)
         self.subs[3] = rospy.Subscriber("/vector/motion_test_cmd",MotionTestCmd,self._add_motion_test_command_to_queue)
         self.subs[4] = rospy.Subscriber("/reset_odometry",Empty,self._reset_odometry)
 
@@ -385,7 +382,10 @@ class VectorDriver:
         config.teleop_y_vel_limit_mps = minimum_f(config.teleop_y_vel_limit_mps, config.y_vel_limit_mps)
         config.teleop_accel_limit_mps2 = minimum_f(config.teleop_accel_limit_mps2, config.accel_limit_mps2)
         config.teleop_yaw_rate_limit_rps = minimum_f(config.teleop_yaw_rate_limit_rps, config.yaw_rate_limit_rps)
-        config.teleop_yaw_accel_limit_rps2 = minimum_f(config.teleop_yaw_accel_limit_rps2, config.teleop_yaw_accel_limit_rps2)      
+        config.teleop_yaw_accel_limit_rps2 = minimum_f(config.teleop_yaw_accel_limit_rps2, config.teleop_yaw_accel_limit_rps2)
+        config.jog_yaw_rate_rps = minimum_f(config.jog_yaw_rate_rps, config.yaw_rate_limit_rps)
+        config.jog_velocity_mps = minimum_f(config.jog_velocity_mps, config.y_vel_limit_mps)
+        config.jog_velocity_mps = minimum_f(config.jog_velocity_mps, config.y_vel_limit_mps)       
         
         """
         Set the teleop configuration in the feedback
@@ -394,7 +394,9 @@ class VectorDriver:
                                                     config.teleop_y_vel_limit_mps,
                                                     config.teleop_accel_limit_mps2,
                                                     config.teleop_yaw_rate_limit_rps,
-                                                    config.teleop_yaw_accel_limit_rps2])
+                                                    config.teleop_yaw_accel_limit_rps2,
+                                                    config.jog_velocity_mps,
+                                                    config.jog_yaw_rate_rps])
         
         if self.param_server_initialized:
             if ((1<<4) == (level & (1<<4))):
@@ -426,39 +428,7 @@ class VectorDriver:
         
         self.param_server_initialized = True
         self.valid_config = config
-        self.update_base_local_planner = True
-        self._update_move_base_params(None)
         return config
-    
-    def _update_move_base_params(self,config):
-        
-        """
-        If parameter updates have not been called in the last 5 seconds allow the
-        subscriber callback to set them
-        """
-        if ((rospy.Time.now().to_sec()-self.last_move_base_update) > 5.0):
-            self.update_base_local_planner = True
-            
-        if self.update_base_local_planner:
-            self.update_base_local_planner = False
-            self.last_move_base_update = rospy.Time.now().to_sec()
-            
-            try:
-                dyn_reconfigure_client= Client("/move_base/DWAPlannerROS",timeout=1.0)
-                changes = dict()
-                changes['acc_lim_x'] = maximum_f(self.valid_config.accel_limit_mps2, self.valid_config.decel_limit_mps2)
-                changes['acc_lim_y'] = maximum_f(self.valid_config.accel_limit_mps2, self.valid_config.decel_limit_mps2)
-                changes['acc_lim_th'] = self.valid_config.yaw_accel_limit_rps2
-                changes['max_vel_x'] = self.valid_config.x_vel_limit_mps
-                changes['max_vel_y'] = self.valid_config.y_vel_limit_mps
-                changes['max_rot_vel'] = self.valid_config.yaw_rate_limit_rps
-                dyn_reconfigure_client.update_configuration(changes)
-                dyn_reconfigure_client.close()
-            except:
-                pass
-            
-            
-            rospy.loginfo("Vector Driver updated move_base parameters to match machine parameters")   
 
     def _continuous_data(self,start_cont):
         set_continuous = [GENERAL_PURPOSE_CMD_ID,[GENERAL_PURPOSE_CMD_SEND_CONTINUOUS_DATA,start_cont]]

@@ -4,6 +4,8 @@ float32 teleop_y_vel_limit_mps
 float32 teleop_accel_limit_mps2
 float32 teleop_yaw_rate_limit_rps
 float32 teleop_yaw_accel_limit_rps2
+float32 jog_velocity_mps
+float32 jog_yaw_rate_rps
 float32 x_vel_limit_mps
 float32 y_vel_limit_mps
 float32 accel_limit_mps2

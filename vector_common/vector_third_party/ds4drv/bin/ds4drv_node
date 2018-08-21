@@ -42,21 +42,23 @@ arising out of or based upon:
  IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR
  CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
  
- \file   vector_teleop
+ \file   vector_driver
 
- \brief  Teleop node for the Stanley Innovation Vector Platform
+ \brief  ROS Driver for the Stanley Innovation Vector platform
 
  \Platform: Linux/ROS Indigo
 --------------------------------------------------------------------"""
-from vector.vector_teleop import VectorTeleop
+from ds4drv.ds4drv_node import DS4DRV_Node
 import rospy
 
 if __name__ == "__main__":
     """
     Initialize the node
     """
-    rospy.init_node('vector_teleop')
-    teleop = VectorTeleop()
-    rospy.on_shutdown(teleop.shutdown)
+    rospy.init_node('ds4drv_node')
+        
+    driver = DS4DRV_Node()
+    rospy.on_shutdown(driver.shutdown)
     rospy.spin()
+     
     
