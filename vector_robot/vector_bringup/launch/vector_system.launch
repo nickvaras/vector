@@ -1,14 +1,19 @@
 <!-- Launch file for Stanley Innovation enabled Vector1 PC startup -->
 
 <launch>
+    <!-- DS4 Driver -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="1 ds4drv ds4drv.launch"
+        name="ds4drv_bringup" output="screen"/>
+
     <!-- ROS Driver, Robot State Publisher, and sensors -->
     <node pkg="si_utils" type="timed_roslaunch"
-        args="1 vector_bringup vector.launch"
+        args="3 vector_bringup vector.launch"
         name="platform_bringup" output="screen"/>
 
     <!-- Sensor bringup for platforms that contain sensors-->
     <node pkg="si_utils" type="timed_roslaunch"
-        args="3 vector_bringup vector_sensors.launch"
+        args="5 vector_bringup vector_sensors.launch"
         name="sensor_bringup" output="screen"/>
         
     <!-- Platform Teleoperation -->

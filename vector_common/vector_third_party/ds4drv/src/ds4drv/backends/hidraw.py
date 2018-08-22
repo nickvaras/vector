@@ -61,13 +61,13 @@ class HidrawDS4Device(DS4Device):
 
         return self.parse_report(buf)
 
-    def read_feature_report(self, report_id, length):
+    def read_feature_report(self, report_id, size):
         
-        length += 1
-        buf = ctypes.create_string_buffer(length)
-        buf[0] = chr(report_id)
-        self._ioctl(HIDIOCGFEATURE(length), buf)
-        return buf.value
+        op = HIDIOCGFEATURE(size + 1)
+        buf = bytearray(size + 1)
+        buf[0] = report_id
+        
+        return fcntl.ioctl(self.fd, op, bytes(buf))
     
     def write_report(self, report_id, report):
         """

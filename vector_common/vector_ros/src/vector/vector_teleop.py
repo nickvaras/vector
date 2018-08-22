@@ -143,6 +143,7 @@ class VectorTeleop(object):
         self.no_motion_commands = True
         self.last_motion_command_time = 0.0
         self.last_joy = rospy.get_time()
+        self.cmd_last = rospy.get_time()
             
         self.cfg_cmd = ConfigCmd()
         self.cfg_pub = rospy.Publisher('/vector/gp_command', ConfigCmd, queue_size=10)
@@ -183,7 +184,7 @@ class VectorTeleop(object):
         
         self._subs.append(rospy.Subscriber("/joy/connection_status", DS4_ConnectionStatus, self._update_joy_status)) 
         rospy.Subscriber('/joy', Joy, self._parse_joy_input)
-        self._t1 = rospy.Timer(rospy.Duration(0.02),self._run_teleop)
+        self._t1 = rospy.Timer(rospy.Duration(0.05),self._run_teleop)
         
     def shutdown(self):
         try:
@@ -276,6 +277,8 @@ class VectorTeleop(object):
     def _run_teleop(self, event):
     
         with self._lock:
+            dt = rospy.get_time() - self.cmd_last
+            
             nav_button_state = 0
             nav_button_state |= self.button_state['rec_wp']      << 0 #0x0001
             nav_button_state |= self.button_state['start_wp']    << 1 #0x0002
@@ -343,7 +346,7 @@ class VectorTeleop(object):
                     self.motion_pub.publish(self.motion_cmd)
                     self.frames_of_zero_command += 1
                 elif self.button_state['dead_man'] and not self.zero_joy_commands:
-                    dt = 0.02
+                    
                     self.frames_of_zero_command = 0
                     if (abs(self.axis_value['jog_x']) > 0.0) or (abs(self.axis_value['jog_y']) > 0.0) or self.button_state['jog_z_plus'] or self.button_state['jog_z_minus']:
                     
@@ -386,7 +389,8 @@ class VectorTeleop(object):
                     self.motion_cmd.linear.x = 0.0
                     self.motion_cmd.linear.y = 0.0
                     self.motion_cmd.angular.z = 0.0
-                    self.limited_cmd = self.motion_cmd  
+                    self.limited_cmd = self.motion_cmd
+            self.cmd_last = rospy.get_time()  
                          
                 
                 

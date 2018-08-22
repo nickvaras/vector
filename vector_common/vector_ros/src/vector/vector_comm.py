@@ -143,11 +143,11 @@ class VectorDriver:
         self.pubs = [0]*2
         self.pubs[0] = rospy.Publisher('/vector/feedback/faultlog', Faultlog, queue_size=10,latch=True)
         self.pubs[1] = rospy.Publisher('/odometry_is_reset', Empty, queue_size=1)
-        self.subs = [0]*5
+        self.subs = [0]*4
         self.subs[0] = rospy.Subscriber("/vector/cmd_vel", Twist, self._add_motion_command_to_queue)
         self.subs[1] = rospy.Subscriber("/vector/gp_command",ConfigCmd,self._add_config_command_to_queue)
-        self.subs[3] = rospy.Subscriber("/vector/motion_test_cmd",MotionTestCmd,self._add_motion_test_command_to_queue)
-        self.subs[4] = rospy.Subscriber("/reset_odometry",Empty,self._reset_odometry)
+        self.subs[2] = rospy.Subscriber("/vector/motion_test_cmd",MotionTestCmd,self._add_motion_test_command_to_queue)
+        self.subs[3] = rospy.Subscriber("/reset_odometry",Empty,self._reset_odometry)
 
         """
         Start the receive handler thread
