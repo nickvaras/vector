@@ -103,6 +103,8 @@ class VectorTeleop(object):
         self.frames_of_zero_command = 0
                 
         
+        self._subs = []
+        self._pubs = []
         
         if (False == self.is_sim):
         
@@ -135,9 +137,7 @@ class VectorTeleop(object):
         """
         Initialize the flags and pubs/subs
         """
-        self._subs = []
-        self._pubs = []
-        
+        self._subs.append(rospy.Subscriber("/vector/feedback/active_configuration", Configuration, self._update_limits))
         
         self.send_cmd_none = False
         self.no_motion_commands = True
@@ -165,6 +165,7 @@ class VectorTeleop(object):
         self.update_stop_state = True
         self.stop_robot = 0
         self.prev_nav_button_state = 0
+        self.no_input_frames = 11
         
         self._lock = threading.Lock()
         
@@ -200,7 +201,16 @@ class VectorTeleop(object):
             for pub in self._pubs:
                 pub.unregister()
         except:
-            pass               
+            pass
+            
+    def _update_limits(self,config):
+        self.x_vel_limit_mps = config.teleop_x_vel_limit_mps
+        self.y_vel_limit_mps = config.teleop_y_vel_limit_mps
+        self.yaw_rate_limit_rps = config.teleop_yaw_rate_limit_rps
+        self.accel_lim = config.teleop_accel_limit_mps2
+        self.yaw_accel_lim = config.teleop_yaw_accel_limit_rps2
+        self.jog_velocity_lim = config.jog_velocity_mps
+        self.jog_yaw_lim = config.jog_yaw_rate_rps               
     
     def _update_joy_status(self,msg):
   
@@ -209,7 +219,7 @@ class VectorTeleop(object):
                 if not self.zero_joy_commands:
                     rospy.logwarn("Joystick reports not connected....zeroing commands")    
                 self.zero_joy_commands = True
-            elif (msg.reports_per_second < 100):
+            elif (msg.reports_per_second < 30):
                 if not self.zero_joy_commands:
                     rospy.logwarn("Joystick reports weak signal....zeroing commands")   
                 self.zero_joy_commands = True
@@ -346,7 +356,7 @@ class VectorTeleop(object):
                     self.motion_pub.publish(self.motion_cmd)
                     self.frames_of_zero_command += 1
                 elif self.button_state['dead_man'] and not self.zero_joy_commands:
-                    
+                    self.no_input_frames = 0 
                     self.frames_of_zero_command = 0
                     if (abs(self.axis_value['jog_x']) > 0.0) or (abs(self.axis_value['jog_y']) > 0.0) or self.button_state['jog_z_plus'] or self.button_state['jog_z_minus']:
                     
@@ -386,18 +396,17 @@ class VectorTeleop(object):
                     else:
                         self.motion_pub.publish(self.limited_cmd)
                 else:
+
                     self.motion_cmd.linear.x = 0.0
                     self.motion_cmd.linear.y = 0.0
                     self.motion_cmd.angular.z = 0.0
                     self.limited_cmd = self.motion_cmd
+                    if (self.no_input_frames < 10): 
+                        self.override_pub.publish(self.limited_cmd)
+                        self.motion_pub.publish(self.limited_cmd)
+                        self.no_input_frames += 1
+                    
+                    
             self.cmd_last = rospy.get_time()  
-                         
-                
-                
-
-           
-        
-        
-
-
-    
+            
+            

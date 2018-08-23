@@ -20,8 +20,8 @@ yaw_correction_factor:                0.0
 #teleop parameters
 teleop_x_vel_limit_mps:               0.5
 teleop_y_vel_limit_mps:               0.5
-teleop_yaw_rate_limit_rps:            0.5
+teleop_yaw_rate_limit_rps:            1.0
 teleop_accel_limit_mps2:              1.0
-teleop_yaw_accel_limit_rps2:          1.0
+teleop_yaw_accel_limit_rps2:          2.0
 jog_velocity_mps:                     0.1
 jog_yaw_rate_rps:                     0.2

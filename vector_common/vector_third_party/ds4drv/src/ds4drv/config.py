@@ -17,7 +17,10 @@ from .utils import parse_button_combo
 import os
 
 user_path = "/home/%s/vector_ws/src/vector_common/vector_third_party/ds4drv/ds4drv.conf"%os.getenv("USER")
-CONFIG_FILES = ("~/.config/ds4drv.conf", "/etc/ds4drv.conf", user_path)
+vector_path = "/home/vector/vector_ws/src/vector_common/vector_third_party/ds4drv/ds4drv.conf"
+developer_path = "/home/developer/vector_ws/src/vector_common/vector_third_party/ds4drv/ds4drv.conf"
+dispatcher_path = "/home/dispatcher/vector_ws/src/vector_common/vector_third_party/ds4drv/ds4drv.conf"
+CONFIG_FILES = ("~/.config/ds4drv.conf", "/etc/ds4drv.conf", user_path, vector_path, developer_path, dispatcher_path)
 DAEMON_LOG_FILE = "~/.cache/ds4drv.log"
 DAEMON_PID_FILE = "/tmp/ds4drv.pid"
 
