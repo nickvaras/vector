@@ -180,8 +180,23 @@ class VectorTeleop(object):
                 rospy.logwarn ('Waiting for joystick to come online,\n make sure it is on an connected via bluetooth.....')
                 
         rospy.logwarn("Joystick is connected and ready.....")
-            
         
+        self._ctl_msg = DS4_Indication()
+        self._ctl_msg.index = 1
+        self._pub = rospy.Publisher('/joy/indication',DS4_Indication,queue_size=1)
+        rospy.sleep(0.1)
+        self._ctl_msg.big_rumble = 0xff
+        self._ctl_msg.small_rumble = 0
+        self._ctl_msg.led_red = 0
+        self._ctl_msg.led_green = 0xff
+        self._ctl_msg.led_blue = 0
+        self._ctl_msg.flash_on = 0
+        self._ctl_msg.flash_off = 0
+        self._pub.publish(self._ctl_msg)
+        rospy.sleep(0.5)
+        self._ctl_msg.big_rumble = 0
+        self._pub.publish(self._ctl_msg)
+        rospy.sleep(0.5)
         
         self._subs.append(rospy.Subscriber("/joy/connection_status", DS4_ConnectionStatus, self._update_joy_status)) 
         rospy.Subscriber('/joy', Joy, self._parse_joy_input)
