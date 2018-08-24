@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /TF1/Frames1
-        - /Sensing1/Odometry1
       Splitter Ratio: 0.59523797
     Tree Height: 715
   - Class: rviz/Selection
@@ -95,19 +94,43 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        base_chassis_link:
+          Value: true
+        base_link:
+          Value: true
+        front_laser_link:
+          Value: true
+        odom:
+          Value: true
+        payload_plate_link:
+          Value: true
+        rear_laser_link:
+          Value: true
+        sic_imu_frame:
+          Value: true
       Marker Scale: 0.200000003
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        {}
+        odom:
+          base_link:
+            base_chassis_link:
+              front_laser_link:
+                {}
+              payload_plate_link:
+                {}
+              rear_laser_link:
+                {}
+              sic_imu_frame:
+                {}
       Update Interval: 0
-      Value: false
+      Value: true
     - Class: rviz/Group
       Displays:
         - Angle Tolerance: 0.100000001
@@ -136,9 +159,9 @@ Visualization Manager:
             Axes Length: 1
             Axes Radius: 0.100000001
             Color: 255; 25; 0
-            Head Length: 0.300000012
-            Head Radius: 0.100000001
-            Shaft Length: 1
+            Head Length: 0.0500000007
+            Head Radius: 0.0500000007
+            Shaft Length: 0.5
             Shaft Radius: 0.0500000007
             Value: Arrow
           Topic: /vector/odometry/local_filtered
@@ -221,11 +244,11 @@ Visualization Manager:
             y_scale: 0.400000006
             z_scale: 0.400000006
           Class: rviz_imu_plugin/Imu
-          Enabled: true
+          Enabled: false
           Name: Imu
           Topic: /vector/feedback/ext_imu
           Unreliable: false
-          Value: true
+          Value: false
           fixed_frame_orientation: true
       Enabled: true
       Name: Sensing
@@ -332,7 +355,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 16.8619995
+      Distance: 8.89861584
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
