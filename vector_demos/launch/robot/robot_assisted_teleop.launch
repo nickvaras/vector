@@ -1,14 +1,14 @@
  <launch>
 
     <!-- Bring up the joystick for control -->
-    <node pkg="si_utils" type="timed_roslaunch"
+    <!--node pkg="si_utils" type="timed_roslaunch"
         args="1 vector_remote_teleop vector_remote_teleop.launch"
-        name="joy_bringup" output="screen" unless="$(optenv VECTOR_HAS_ONBOARD_JOY false)"/>
+        name="joy_bringup" output="screen" unless="$(optenv VECTOR_HAS_ONBOARD_JOY false)"/-->
         
-    <!-- Bring up assisted teleop -->
-    <node pkg="si_utils" type="timed_roslaunch"
+    <!-- Bring up assisted teleop (runs by default on the robot now)-->
+    <!--node pkg="si_utils" type="timed_roslaunch"
         args="2 vector_demos assisted_teleop.launch local:=false"
-        name="mapping_bringup" output="screen"/> 
+        name="mapping_bringup" output="screen"/--> 
     
     <!-- Bring up rviz -->
     <node pkg="si_utils" type="timed_roslaunch"
