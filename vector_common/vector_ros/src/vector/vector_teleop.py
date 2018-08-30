@@ -375,15 +375,7 @@ class VectorTeleop(object):
                     self.frames_of_zero_command = 0
                     if (abs(self.axis_value['jog_x']) > 0.0) or (abs(self.axis_value['jog_y']) > 0.0) or self.button_state['jog_z_plus'] or self.button_state['jog_z_minus']:
                     
-                        if (self.axis_value['jog_y'] > 0.0) and (self.axis_value['jog_x'] > 0.0):
-                            self.motion_cmd.linear.x =  0.0
-                            self.motion_cmd.linear.y =  0.0
-                            self.motion_cmd.angular.z = self.jog_yaw_lim
-                        elif (self.axis_value['jog_y'] < 0.0) and (self.axis_value['jog_x'] < 0.0):
-                            self.motion_cmd.linear.x =  0.0
-                            self.motion_cmd.linear.y =  0.0
-                            self.motion_cmd.angular.z = -self.jog_yaw_lim
-                        elif ( abs(self.axis_value['jog_y'] * self.axis_value['jog_x']) > 0.9):
+                        if ( abs(self.axis_value['jog_y'] * self.axis_value['jog_x']) > 0.9):
                             self.motion_cmd.linear.x =  0.0
                             self.motion_cmd.linear.y =  0.0
                             self.motion_cmd.angular.z = 0.0
