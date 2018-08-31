@@ -12,14 +12,19 @@ export VECTOR_IP_PORT_NUM=8080
 
 # Joystick configurations for joystick set VECTOR_JOY_IS_ATTACHED if the joystick
 # is physically attached to this PC
-export VECTOR_JOY_IS_ATTACHED=true
-export VECTOR_JOY_DEV=/dev/input/js0
-export VECTOR_JOY_MAPPING=xbox360
-export VECTOR_JOY_DEADZONE=0.1
+if [ "$HOSTNAME" = vector1 ]; then
+    export VECTOR_JOY_IS_ATTACHED=true
+    export VECTOR_JOY_DEV=/dev/input/js0
+    export VECTOR_JOY_MAPPING=xbox360
+    export VECTOR_JOY_DEADZONE=0.1
+else
+    export VECTOR_JOY_IS_ATTACHED=false
+    export VECTOR_JOY_DEV=/dev/input/js1
+    export VECTOR_JOY_MAPPING=xbox360
+    export VECTOR_JOY_DEADZONE=0.1
+fi
 
 #Used to determine if the system is equipped with saftey lasers 
-export VECTOR_HAS_SAFETY_LASERS=false
-
-export DISPATCHER_UI_LOCAL=true
+export VECTOR_HAS_SAFETY_LASERS=true
 
 
