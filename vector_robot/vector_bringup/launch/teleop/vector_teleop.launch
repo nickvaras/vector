@@ -15,7 +15,7 @@
     </node>
     
     <node pkg="vector_ros" type="vector_teleop" name="vector_teleop" output="screen">
-        <rosparam file="$(find vector_bringup)/launch/teleop/config/$(optenv VECTOR_JOY_MAPPING xbox360).yaml" command="load"/>
+        <param name="js_type" value="$(optenv VECTOR_JOY_TYPE ds4)"/>
         <param name="sim" value="$(arg sim)"/>
         <param name="sim_teleop_vel_limit_mps" value="$(arg sim_teleop_vel_limit_mps)"/>
         <param name="sim_teleop_yaw_rate_limit_rps" value="$(arg sim_teleop_yaw_rate_limit_rps)"/>

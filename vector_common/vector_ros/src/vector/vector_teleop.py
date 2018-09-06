@@ -60,35 +60,91 @@ import rospy
 import sys
 import math
 
+DS4_CTRL_MAP =     dict({'momentary': {'dead_man'     : {'is_button':False,'index':3,'invert_axis':True,'set_thresh':0.9},
+                                       'man_ovvrd'    : {'is_button':False,'index':4,'invert_axis':True,'set_thresh':0.9},
+                                       'standby'      : {'is_button':True,'index':8,'set_val':1},
+                                       'tractor'      : {'is_button':True,'index':9,'set_val':1},
+                                       'stop_robot'   : {'is_button':True,'index':5,'set_val':1},
+                                       'start_wp'     : {'is_button':True,'index':0,'set_val':1},
+                                       'stop_wp'      : {'is_button':True,'index':1,'set_val':1},
+                                       'reset_wp'     : {'is_button':True,'index':2,'set_val':1},
+                                       'rec_wp'       : {'is_button':True,'index':3,'set_val':1},
+                                       'clear_wp'     : {'is_button':True,'index':4,'set_val':1}},
+                         'axis'     : {'left_right'   : {'index' :0, 'invert_axis':False},
+                                       'for_aft'      : {'index' :1, 'invert_axis':False},
+                                       'twist'        : {'index' :2, 'invert_axis':False},
+                                       'jog_x'        : {'index' :10, 'invert_axis':False},
+                                       'jog_y'        : {'index' :9, 'invert_axis':False}}})
+
+FX10_CTRL_MAP =    dict({'momentary': {'dead_man'     : {'is_button':False,'index':2,'invert_axis':True,'set_thresh':0.9},
+                                       'man_ovvrd'    : {'is_button':False,'index':5,'invert_axis':True,'set_thresh':0.9},
+                                       'standby'      : {'is_button':True,'index':6,'set_val':1},
+                                       'tractor'      : {'is_button':True,'index':7,'set_val':1},
+                                       'stop_robot'   : {'is_button':True,'index':5,'set_val':1},
+                                       'start_wp'     : {'is_button':True,'index':0,'set_val':1},
+                                       'stop_wp'      : {'is_button':True,'index':1,'set_val':1},
+                                       'reset_wp'     : {'is_button':True,'index':3,'set_val':1},
+                                       'rec_wp'       : {'is_button':True,'index':2,'set_val':1},
+                                       'clear_wp'     : {'is_button':True,'index':4,'set_val':1}},
+                         'axis'     : {'left_right'   : {'index' :0, 'invert_axis':False},
+                                       'for_aft'      : {'index' :1, 'invert_axis':False},
+                                       'twist'        : {'index' :3, 'invert_axis':False},
+                                       'jog_x'        : {'index' :7, 'invert_axis':False},
+                                       'jog_y'        : {'index' :6, 'invert_axis':False}}})
+
+"""                                       
+X3DP_CTRL_MAP =    dict({'momentary': {'dead_man'     : {'is_button':False,'index':3,'invert_axis':True,'set_thresh':0.9},
+                                       'man_ovvrd'    : {'is_button':False,'index':4,'invert_axis':True,'set_thresh':0.9},
+                                       'standby'      : {'is_button':True,'index':8,'set_val':1},
+                                       'tractor'      : {'is_button':True,'index':9,'set_val':1},
+                                       'stop_robot'   : {'is_button':True,'index':5,'set_val':1},
+                                       'start_wp'     : {'is_button':True,'index':0,'set_val':1},
+                                       'stop_wp'      : {'is_button':True,'index':1,'set_val':1},
+                                       'reset_wp'     : {'is_button':True,'index':2,'set_val':1},
+                                       'rec_wp'       : {'is_button':True,'index':3,'set_val':1},
+                                       'clear_wp'     : {'is_button':True,'index':4,'set_val':1}},
+                         'axis'     : {'left_right'   : {'index' :0, 'invert_axis':False},
+                                       'for_aft'      : {'index' :1, 'invert_axis':False},
+                                       'twist'        : {'index' :2, 'invert_axis':False},
+                                       'jog_x'        : {'index' :10, 'invert_axis':False},
+                                       'jog_y'        : {'index' :9, 'invert_axis':False}}})
+                                       
+CTRL_MAPPING = dict({'ds4' : DS4_CTRL_MAP,
+                     'f710': FX10_CTRL_MAP,
+                     'f310': FX10_CTRL_MAP,
+                     'x3dp': X3DP_CTRL_MAP})
+"""
+
+"""
+Leaving out extreme 3d pro for now
+"""
+CTRL_MAPPING = dict({'ds4' : DS4_CTRL_MAP,
+                     'f710': FX10_CTRL_MAP,
+                     'f310': FX10_CTRL_MAP})
+
 class VectorTeleop(object):
     def __init__(self):
          
         self.is_sim = rospy.get_param('~sim',False)
-
-        self.ctrl_map  = dict({'momentary': {'dead_man'     : {'is_button':False,'index':3,'invert_axis':True,'set_thresh':0.9},
-                                             'man_ovvrd'    : {'is_button':False,'index':4,'invert_axis':True,'set_thresh':0.9},
-                                             'standby'      : {'is_button':True,'index':8,'set_val':1},
-                                             'tractor'      : {'is_button':True,'index':9,'set_val':1},
-                                             'stop_robot'   : {'is_button':True,'index':5,'set_val':1},
-                                             'start_wp'     : {'is_button':True,'index':0,'set_val':1},
-                                             'stop_wp'      : {'is_button':True,'index':1,'set_val':1},
-                                             'reset_wp'     : {'is_button':True,'index':2,'set_val':1},
-                                             'rec_wp'       : {'is_button':True,'index':3,'set_val':1},
-                                             'clear_wp'     : {'is_button':True,'index':4,'set_val':1},
-                                             'jog_z_plus'   : {'is_button':True,'index':10,'set_val':1},
-                                             'jog_z_minus'  : {'is_button':True,'index':11,'set_val':1}},
-                               'axis'     : {'left_right'   : {'index' :0, 'invert_axis':False},
-                                             'for_aft'      : {'index' :1, 'invert_axis':False},
-                                             'twist'        : {'index' :2, 'invert_axis':False},
-                                             'jog_x'        : {'index' :10, 'invert_axis':False},
-                                             'jog_y'        : {'index' :9, 'invert_axis':False}}})
+        self.js_type = rospy.get_param('~js_type','ds4')
+        
+        if not self.js_type in CTRL_MAPPING:
+            rospy.logerr("No such control mapping %s; try ds4, f710, f310 or x3dp"%self.js_type)
+            sys.exit(0)
+            
+        
+        """
+        Get the mapping for the various commands, defaults are xbox360 wireless
+        """
+        self.ctrl_map = CTRL_MAPPING[self.js_type]
+        
         """
         Initialize the debounce logic states
         """
         self.db_cnt = dict()
         self.axis_value = dict()
         self.button_state = dict()
-        
+
         for key, value in self.ctrl_map.iteritems():
             if key == 'momentary':
                 for key, value2 in value.iteritems():
@@ -169,36 +225,37 @@ class VectorTeleop(object):
         
         self._lock = threading.Lock()
         
-        joy_online = False
-        while not joy_online and not rospy.is_shutdown():
-            
-            try:
-                msg = rospy.wait_for_message("/joy/connection_status", DS4_ConnectionStatus, timeout=10.0)
-                if 1 == msg.index:
-                    joy_online = msg.connected
-            except:
-                rospy.logwarn ('Waiting for joystick to come online,\n make sure it is on an connected via bluetooth.....')
+        if ('ds4' == self.js_type):
+            joy_online = False
+            while not joy_online and not rospy.is_shutdown():
                 
-        rospy.logwarn("Joystick is connected and ready.....")
-        
-        self._ctl_msg = DS4_Indication()
-        self._ctl_msg.index = 1
-        self._pub = rospy.Publisher('/joy/indication',DS4_Indication,queue_size=1)
-        rospy.sleep(0.1)
-        self._ctl_msg.big_rumble = 0xff
-        self._ctl_msg.small_rumble = 0
-        self._ctl_msg.led_red = 0
-        self._ctl_msg.led_green = 0xff
-        self._ctl_msg.led_blue = 0
-        self._ctl_msg.flash_on = 0
-        self._ctl_msg.flash_off = 0
-        self._pub.publish(self._ctl_msg)
-        rospy.sleep(0.5)
-        self._ctl_msg.big_rumble = 0
-        self._pub.publish(self._ctl_msg)
-        rospy.sleep(0.5)
-        
-        self._subs.append(rospy.Subscriber("/joy/connection_status", DS4_ConnectionStatus, self._update_joy_status)) 
+                try:
+                    msg = rospy.wait_for_message("/joy/connection_status", DS4_ConnectionStatus, timeout=10.0)
+                    if 1 == msg.index:
+                        joy_online = msg.connected
+                except:
+                    rospy.logwarn ('Waiting for joystick to come online,\n make sure it is on an connected via bluetooth.....')
+                    
+            rospy.logwarn("Joystick is connected and ready.....")
+            
+            self._ctl_msg = DS4_Indication()
+            self._ctl_msg.index = 1
+            self._pub = rospy.Publisher('/joy/indication',DS4_Indication,queue_size=1)
+            rospy.sleep(0.1)
+            self._ctl_msg.big_rumble = 0xff
+            self._ctl_msg.small_rumble = 0
+            self._ctl_msg.led_red = 0
+            self._ctl_msg.led_green = 0xff
+            self._ctl_msg.led_blue = 0
+            self._ctl_msg.flash_on = 0
+            self._ctl_msg.flash_off = 0
+            self._pub.publish(self._ctl_msg)
+            rospy.sleep(0.5)
+            self._ctl_msg.big_rumble = 0
+            self._pub.publish(self._ctl_msg)
+            rospy.sleep(0.5)
+            
+            self._subs.append(rospy.Subscriber("/joy/connection_status", DS4_ConnectionStatus, self._update_joy_status)) 
         rospy.Subscriber('/joy', Joy, self._parse_joy_input)
         self._t1 = rospy.Timer(rospy.Duration(0.05),self._run_teleop)
         
@@ -373,24 +430,10 @@ class VectorTeleop(object):
                 elif self.button_state['dead_man'] and not self.zero_joy_commands:
                     self.no_input_frames = 0 
                     self.frames_of_zero_command = 0
-                    if (abs(self.axis_value['jog_x']) > 0.0) or (abs(self.axis_value['jog_y']) > 0.0) or self.button_state['jog_z_plus'] or self.button_state['jog_z_minus']:
-                    
-                        if (self.axis_value['jog_y'] > 0.0) and (self.axis_value['jog_x'] > 0.0):
-                            self.motion_cmd.linear.x =  0.0
-                            self.motion_cmd.linear.y =  0.0
-                            self.motion_cmd.angular.z = self.jog_yaw_lim
-                        elif (self.axis_value['jog_y'] < 0.0) and (self.axis_value['jog_x'] < 0.0):
-                            self.motion_cmd.linear.x =  0.0
-                            self.motion_cmd.linear.y =  0.0
-                            self.motion_cmd.angular.z = -self.jog_yaw_lim
-                        elif ( abs(self.axis_value['jog_y'] * self.axis_value['jog_x']) > 0.9):
-                            self.motion_cmd.linear.x =  0.0
-                            self.motion_cmd.linear.y =  0.0
-                            self.motion_cmd.angular.z = 0.0
-                        else:
-                            self.motion_cmd.linear.x =  (self.axis_value['jog_x'] * self.jog_velocity_lim)
-                            self.motion_cmd.linear.y =  (self.axis_value['jog_y'] * self.jog_velocity_lim)
-                            self.motion_cmd.angular.z = 0.0
+                    if (abs(self.axis_value['jog_x']) > 0.0) or (abs(self.axis_value['jog_y']) > 0.0):
+                        self.motion_cmd.linear.x =  (self.axis_value['jog_x'] * self.jog_velocity_lim)
+                        self.motion_cmd.linear.y =  (self.axis_value['jog_y'] * self.jog_velocity_lim)
+                        self.motion_cmd.angular.z = 0.0
                     else:                    
                         self.motion_cmd.linear.x =  (self.axis_value['for_aft'] * self.x_vel_limit_mps)
                         self.motion_cmd.linear.y =  (self.axis_value['left_right'] * self.y_vel_limit_mps)
