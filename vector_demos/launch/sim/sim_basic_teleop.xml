@@ -8,7 +8,7 @@
     </node>
     
     <node pkg="vector_ros" ns="vector" type="vector_teleop" name="vector_teleop" output="screen">
-        <rosparam file="$(find vector_bringup)/launch/teleop/config/$(optenv VECTOR_JOY_MAPPING xbox360).yaml" command="load"/>
+        <param name="js_type" value="$(optenv VECTOR_JOY_TYPE ds4)"/>
         <param name="sim" value="true"/>
     </node>
     
