@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="ds4drv" type="ds4drv_node" name="ds4drv_node" output="screen"/>
+</launch> 

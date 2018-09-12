@@ -71,6 +71,8 @@ namespace assisted_teleop {
     cmd_vel_.linear.x = 0.0;
     cmd_vel_.linear.y = 0.0;
     cmd_vel_.linear.z = 0.0;
+    vel_cmd_has_updated1 = false;
+    vel_cmd_has_updated2 = false;
 
     planning_thread_ = new boost::thread(boost::bind(&AssistedTeleop::controlLoop, this));
   }
@@ -88,6 +90,9 @@ namespace assisted_teleop {
     {
         cmd_vel_.linear.y = 0.0;
     }
+    vel_cmd_has_updated1=true;
+    vel_cmd_has_updated2=true;
+    
   }
 
   void AssistedTeleop::controlLoop(){
@@ -109,7 +114,11 @@ namespace assisted_teleop {
         cmd.linear.x = desired_vel[0];
         cmd.linear.y = desired_vel[1];
         cmd.angular.z = desired_vel[2];
-        pub_.publish(cmd);
+        if (true == vel_cmd_has_updated1)
+        {
+            pub_.publish(cmd);
+            vel_cmd_has_updated1 = false;
+        }
         r.sleep();
         continue;
       }
@@ -204,12 +213,20 @@ namespace assisted_teleop {
         best = scaling_factor * best;
       }
 
-      geometry_msgs::Twist best_cmd;
-      best_cmd.linear.x = best[0];
+     geometry_msgs::Twist best_cmd;
+      if(fabs(best[0])<0.05){
+        best_cmd.linear.x = 0;  
+      }else{
+        best_cmd.linear.x = best[0];
+      }
       best_cmd.linear.y = best[1];
       best_cmd.angular.z = best[2];
-      pub_.publish(best_cmd);
-
+      if (true == vel_cmd_has_updated2)
+      {
+        pub_.publish(best_cmd);
+        vel_cmd_has_updated2 = false;
+      }
+      
       r.sleep();
     }
   }

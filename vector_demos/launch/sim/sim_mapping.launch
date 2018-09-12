@@ -1,8 +1,15 @@
  <launch>
  	
+    <arg name="js_type" default="$(optenv VECTOR_JOY_TYPE ds4)"/>
+    
+    <!-- DS4 Driver -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="1 ds4drv ds4drv.launch"
+        name="ds4drv_bringup" output="screen" if="$(eval js_type == 'ds4')"/>
+
     <!-- Bring up the platform in sim with all models, controllers, sensors estimates -->
     <node pkg="si_utils" type="timed_roslaunch"
-        args="1 vector_gazebo vector_test_zone.launch"
+        args="3 vector_gazebo vector_test_zone.launch"
         name="sim_bringup" output="screen"/>
         
     <!-- Bring up the joystick for control -->

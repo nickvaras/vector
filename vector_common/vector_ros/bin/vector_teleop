@@ -56,6 +56,7 @@ if __name__ == "__main__":
     Initialize the node
     """
     rospy.init_node('vector_teleop')
-    VectorTeleop()
+    teleop = VectorTeleop()
+    rospy.on_shutdown(teleop.shutdown)
     rospy.spin()
     
