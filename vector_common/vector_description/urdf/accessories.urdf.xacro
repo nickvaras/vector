@@ -52,25 +52,38 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                 <headingGaussianNoise>0.00005</headingGaussianNoise>
             </plugin>
         </gazebo>
-            
-        <xacro:unless value="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
+        
+        <xacro:if value="$(optenv SI_DEV_VECTOR false)">
             <xacro:sick_tim laser_prefix="front" parent="base_chassis_link">
-                <origin xyz="0.2525 0.1918 0.13791" rpy="${M_PI} 0 ${M_PI/4}" />
+                <origin xyz="0.306500 0 0.142068" rpy="${M_PI} 0 0" />
             </xacro:sick_tim>
             
             <xacro:sick_tim laser_prefix="rear" parent="base_chassis_link">
-                <origin xyz="-0.2525 -0.1918 0.13791" rpy="${M_PI} 0 ${5*M_PI/4}" />
-            </xacro:sick_tim>
-        </xacro:unless>
-
-        <xacro:if value="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
-            <xacro:hokuyo_uam_05lp laser_prefix="front" parent="base_chassis_link">
-                <origin xyz="0.252995 0.192212 0.137128" rpy="${M_PI} 0 ${M_PI/4}"/>
-            </xacro:hokuyo_uam_05lp>
-            
-            <xacro:hokuyo_uam_05lp laser_prefix="rear" parent="base_chassis_link">
-                <origin xyz="-0.252995 -0.192212 0.137128" rpy="${M_PI} 0 ${5*M_PI/4}" />
-            </xacro:hokuyo_uam_05lp>
+                <origin xyz="-0.306500 0 0.142068" rpy="${M_PI} 0 ${M_PI}" />
+            </xacro:sick_tim>  
         </xacro:if>
+        
+        <xacro:unless value="$(optenv SI_DEV_VECTOR false)">
+            
+            <xacro:unless value="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
+                <xacro:sick_tim laser_prefix="front" parent="base_chassis_link">
+                    <origin xyz="0.2525 0.1918 0.13791" rpy="${M_PI} 0 ${M_PI/4}" />
+                </xacro:sick_tim>
+                
+                <xacro:sick_tim laser_prefix="rear" parent="base_chassis_link">
+                    <origin xyz="-0.2525 -0.1918 0.13791" rpy="${M_PI} 0 ${5*M_PI/4}" />
+                </xacro:sick_tim>
+            </xacro:unless>
+
+            <xacro:if value="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
+                <xacro:hokuyo_uam_05lp laser_prefix="front" parent="base_chassis_link">
+                    <origin xyz="0.252995 0.192212 0.137128" rpy="${M_PI} 0 ${M_PI/4}"/>
+                </xacro:hokuyo_uam_05lp>
+                
+                <xacro:hokuyo_uam_05lp laser_prefix="rear" parent="base_chassis_link">
+                    <origin xyz="-0.252995 -0.192212 0.137128" rpy="${M_PI} 0 ${5*M_PI/4}" />
+                </xacro:hokuyo_uam_05lp>
+            </xacro:if>
+        </xacro:unless>
     </xacro:macro>
 </robot>

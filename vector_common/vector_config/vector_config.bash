@@ -38,4 +38,9 @@ fi
 # Used to determine if the system is equipped with saftey lasers 
 export VECTOR_HAS_SAFETY_LASERS=true
 
+export SI_DEV_VECTOR=true
+export DISPATCHER_UI_LOCAL=true
+export DISPATCHER_UI_HOST=u-p71
+export DISPATCHER_UI_USER=phussey
+
 
