@@ -66,7 +66,7 @@ class SyncUISrcs(object):
         self._lock = threading.Lock()
         
         
-        self.laser_pub = rospy.Publisher('/vector/base_scan_filtered_throttle',LaserScan,queue_size=1)
+        self.laser_pub = rospy.Publisher('/waypoint_ui/base_scan_filtered_throttle',LaserScan,queue_size=1)
         self.tfBuffer = tf2_ros.Buffer()
         self.tflistener = tf2_ros.TransformListener(self.tfBuffer)
         self.robot_pose_publisher = rospy.Publisher('/robot_pose',Pose, queue_size=1)
@@ -81,7 +81,7 @@ class SyncUISrcs(object):
     def _run(self,event):
         with self._lock:
             try:
-                laser_message = rospy.wait_for_message('/vector/base_scan_filtered', LaserScan, timeout=0.2)
+                laser_message = rospy.wait_for_message('/waypoint_ui/base_scan_filtered', LaserScan, timeout=0.2)
                 trans = self.tfBuffer.lookup_transform('map', 'base_link', rospy.Time(), rospy.Duration(0.4))
                 msg = Pose()
 

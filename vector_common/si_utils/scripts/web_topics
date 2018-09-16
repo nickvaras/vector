@@ -49,24 +49,50 @@ arising out of or based upon:
  \Platform: Linux/ROS Indigo
 --------------------------------------------------------------------"""
 import rospy
+from std_msgs.msg import Empty,Float32,Bool
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose,Twist
+from ui_msgs.msg import *
+from vector_msgs.msg import *
 import threading
 import tf
 import tf2_ros
 from tf2_msgs.msg import TFMessage
 
-class SyncUISrcs(object):
+class WebTopics(object):
     def __init__(self):
     
+        self._p = []
+        self._p.append(rospy.Publisher('/waypoint/base_scan_filtered', LaserScan, queue_size=10))
+        self._p.append(rospy.Publisher('/vector/gp_command', ConfigCmd, queue_size=10))
+        self._p.append(rospy.Publisher('/waypoint/odometry/local_filtered', Odometry, queue_size=10))
+        self._p.append(rospy.Publisher("/waypoint/aux_battery_soc", Float32, queue_size=10))
+        self._p.append(rospy.Publisher("/waypoint/embedded_response_active", Bool, queue_size=10))
+        self._p.append(rospy.Publisher("/waypoint/operational_state", UInt32, queue_size=10))
+        
+    
+        self._s = []
+        self._s.append(rospy.Subscriber('/vector/base_scan_filtered',LaserScan,self._relay_laserscan))
+        self._s.append(rospy.Subscriber('/waypoint/set_tractor',Empty,self._set_tractor_mode))
+        self._s.append(rospy.Subscriber('/waypoint/set_standby',Empty,self._set_standby_mode))
+        self._s.append(rospy.Subscriber("/vector/odometry/local_filtered", Odometry, self._relay_odom))
+        self._s.append(rospy.Subscriber("/vector/feedback/battery", Battery, self._relay_battery))
+        self._s.append(rospy.Subscriber("/vector/feedback/status", Status, self._relay_status))
+        
+        
+        
+
+        
+        
+            
         """
         Setup a lock for accessing data in the control loop
         """
         self._lock = threading.Lock()
         
         
-        self.laser_pub = rospy.Publisher('/waypoint_ui/base_scan_filtered_throttle',LaserScan,queue_size=1)
+        self.laser_pub = rospy.Publisher('/vector/base_scan_filtered_throttle',LaserScan,queue_size=1)
         self.tfBuffer = tf2_ros.Buffer()
         self.tflistener = tf2_ros.TransformListener(self.tfBuffer)
         self.robot_pose_publisher = rospy.Publisher('/robot_pose',Pose, queue_size=1)
@@ -81,7 +107,7 @@ class SyncUISrcs(object):
     def _run(self,event):
         with self._lock:
             try:
-                laser_message = rospy.wait_for_message('/waypoint_ui/base_scan_filtered', LaserScan, timeout=0.2)
+                laser_message = rospy.wait_for_message('/vector/base_scan_filtered', LaserScan, timeout=0.2)
                 trans = self.tfBuffer.lookup_transform('odom', 'base_link', rospy.Time(), rospy.Duration(0.4))
                 msg = Pose()
 
