@@ -54,11 +54,17 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from vector_msgs.msg import *
 
+TRACTOR_REQUEST=5
+STANDBY_REQUEST=4
+POWERDOWN_REQUEST=6
+
 WEB_MODES_DICT = dict({"tractor":5,"standby":4,"power_down":6})
 ROBOT_MODES_DICT = dict({5:"tractor",4:"standby",6:"power_down"})
 
 class WebTopics(object):
     def __init__(self):
+    
+        self._is_sim = rospy.get_param('~sim', False)
     
         self._p = dict()
         self._p['base_scan_filtered'] = rospy.Publisher('/waypoint/base_scan_filtered', LaserScan, queue_size=10)
@@ -94,6 +100,10 @@ class WebTopics(object):
             cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE'
             cmd.gp_param = TRACTOR_REQUEST
             self._p['gp_command'].publish(cmd)
+            if self._is_sim:
+                tmp = UInt32()
+                tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[TRACTOR_REQUEST]]         
+                self._p['operational_state'].publish(tmp)
 
     def _set_standby_mode(self,msg):
         if not rospy.is_shutdown():
@@ -102,6 +112,10 @@ class WebTopics(object):
             cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE'
             cmd.gp_param = STANDBY_REQUEST
             self._p['gp_command'].publish(cmd)
+            if self._is_sim:
+                tmp = UInt32()
+                tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[STANDBY_REQUEST]]         
+                self._p['operational_state'].publish(tmp)
     
     def _relay_odom(self,msg):
         if not rospy.is_shutdown():

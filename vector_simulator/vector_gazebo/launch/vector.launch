@@ -12,7 +12,9 @@
     
     <node name="sim_start_patch" pkg="vector_gazebo" type="sim_start_patch" />
     
-    <node name="web_topics" pkg="si_utils" type="web_topics" />
+    <node name="web_topics" pkg="si_utils" type="web_topics" >
+        <param name="sim" value="true"/>
+    </node> 
 
 	<!-- send robot urdf to param server -->
 	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find vector_description)/urdf/vector.urdf.xacro'" />
