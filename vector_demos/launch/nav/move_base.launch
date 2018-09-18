@@ -49,8 +49,8 @@
         <param name="local_costmap/global_frame" value="odom" if="$(arg no_static_map)" />
         <param name="global_costmap/global_frame" value="odom" if="$(arg no_static_map)" />
         
-        <param name="global_costmap/footprint" value="$(env ROBOT_FOOTPRINT)" />
-        <param name="local_costmap/footprint" value="$(env ROBOT_FOOTPRINT)" />
+        <!--param name="global_costmap/footprint" value="$(env ROBOT_FOOTPRINT)" />
+        <param name="local_costmap/footprint" value="$(env ROBOT_FOOTPRINT)" /-->
 
     </node>
     
