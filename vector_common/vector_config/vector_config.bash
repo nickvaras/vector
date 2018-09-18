@@ -38,8 +38,8 @@ fi
 # Used to determine if the system is equipped with saftey lasers 
 export VECTOR_HAS_SAFETY_LASERS=true
 
-
-export LASER_FOOTPRINT=[[0.30905,0.326846],[0.30905,-0.326846],[-0.30905,-0.326846],[-0.30905,0.326846]]
+# Used to determine if the system is equipped with a vlp16
+export VECTOR_HAS_VLP16=true
 
 
 

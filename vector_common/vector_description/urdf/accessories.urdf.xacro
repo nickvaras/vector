@@ -26,6 +26,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 <robot name="vector_accessories" xmlns:xacro="http://ros.org/wiki/xacro">
     <xacro:include filename="$(find vector_description)/urdf/sensors/sick_tim.urdf.xacro"/>
     <xacro:include filename="$(find vector_description)/urdf/sensors/hokuyo_uam_05lp.urdf.xacro"/>
+    <xacro:include filename="$(find vector_description)/urdf/sensors/velodyne_vlp16.urdf.xacro"/>
+    <xacro:include filename="$(find vector_description)/urdf/vector_components/vector_vlp16_mount.urdf.xacro"/>
 
     <xacro:property name="M_PI" value="3.14159"/>
     
@@ -85,5 +87,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                 </xacro:hokuyo_uam_05lp>
             </xacro:if>
         </xacro:unless>
+        
+        <xacro:if value="$(optenv VECTOR_HAS_VLP16 false)">
+            <xacro:vector_vlp16_mount/>
+            <xacro:velodyne_vlp16 parent="base_chassis_link">
+                <origin xyz="0 0 0.315507" rpy="0 0 0" />
+            </xacro:velodyne_vlp16>
+        </xacro:if>            
+        
     </xacro:macro>
 </robot>

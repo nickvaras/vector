@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!--
+Software License Agreement (BSD)
+\file      omni_structure.urdf.xacro
+\authors   Patrick Hussey
+\copyright Copyright (c) 2015, Stanley Innovation, Inc., All rights reserved.
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the
+   following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+   following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Neither the name of Stanley Innovation, Inc. nor the names of its contributors may be used to endorse or promote
+   products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WAR-
+RANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, IN-
+DIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<robot name="vector_vlp16_mount" xmlns:xacro="http://ros.org/wiki/xacro">
+  
+	<xacro:macro name="vector_vlp16_mount">
+		        
+        <joint name="vlp16_mount_joint" type="fixed">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <parent link="base_chassis_link" />
+            <child link="vlp16_mount_link" />
+        </joint>
+        
+        <link name="vlp16_mount_link">
+	    <inertial>
+		    <mass value="12.0" />
+		    <origin xyz="0 0 0.3635" rpy="0 0 0"/>
+		    <inertia ixx="0.335870"  ixy="0.000000" ixz="0.000001"
+                         iyx="0.000000" iyy="0.435105" iyz="0.000000"
+                         izx="0.000001" izy="0.000000"  izz="0.596237" />
+	    </inertial>
+            <collision>
+			    <geometry>
+				    <mesh filename="package://vector_description/meshes/vector_components/collision/vector_vlp16_mount_collision.stl" />
+			    </geometry>
+			</collision>
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0" />
+			    <geometry>
+				    <mesh filename="package://vector_description/meshes/vector_components/visual/vector_vlp16_mount.dae" />
+			    </geometry>
+			</visual>
+		</link>
+		
+        <gazebo reference="vlp16_mount_link">
+			<mu1 value="0.3"/>
+			<mu2 value="0.3"/>
+			<kp value="10000000.0" />
+			<kd value="1.0" />
+			<fdir1 value="1 0 0"/>
+        </gazebo>
+        		
+    </xacro:macro>
+
+</robot>
