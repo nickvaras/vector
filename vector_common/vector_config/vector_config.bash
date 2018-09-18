@@ -39,7 +39,7 @@ fi
 export VECTOR_HAS_SAFETY_LASERS=true
 
 # Used to determine if the system is equipped with a vlp16
-export VECTOR_HAS_VLP16=true
+export VECTOR_HAS_VLP16=false
 
 
 
