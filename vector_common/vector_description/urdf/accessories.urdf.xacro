@@ -26,6 +26,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 <robot name="vector_accessories" xmlns:xacro="http://ros.org/wiki/xacro">
     <xacro:include filename="$(find vector_description)/urdf/sensors/sick_tim.urdf.xacro"/>
     <xacro:include filename="$(find vector_description)/urdf/sensors/hokuyo_uam_05lp.urdf.xacro"/>
+    <xacro:include filename="$(find vector_description)/urdf/sensors/webcam.urdf.xacro"/>
 
     <xacro:property name="M_PI" value="3.14159"/>
     
@@ -72,5 +73,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                 <origin xyz="-0.252995 -0.192212 0.137128" rpy="${M_PI} 0 ${5*M_PI/4}" />
             </xacro:hokuyo_uam_05lp>
         </xacro:if>
+
+        <xacro:if value="$(optenv VECTOR_HAS_WEBCAM false)">
+            <xacro:webcam parent="base_chassis_link"/>
+        </xacro:if>
+
     </xacro:macro>
 </robot>
