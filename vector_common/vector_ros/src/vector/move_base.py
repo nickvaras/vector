@@ -56,9 +56,8 @@ from vector_msgs.msg import *
 from geometry_msgs.msg import Pose, PoseStamped, PointStamped, PoseWithCovarianceStamped, Point, Quaternion, Twist
 from move_base_msgs.msg import *
 from std_msgs.msg import Bool, UInt32
-from math import pow, sqrt
+from math import pow, sqrt, atan2
 from visualization_msgs.msg import MarkerArray,Marker
-from math import atan2
 import rospkg
 
 class VectorMoveBase():
