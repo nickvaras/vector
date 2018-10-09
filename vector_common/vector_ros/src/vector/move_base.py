@@ -57,7 +57,6 @@ from geometry_msgs.msg import Pose, PoseStamped, PointStamped, PoseWithCovarianc
 from move_base_msgs.msg import *
 from std_msgs.msg import Bool, UInt32
 from math import pow, sqrt
-from system_defines import *
 from visualization_msgs.msg import MarkerArray,Marker
 from math import atan2
 import rospkg
