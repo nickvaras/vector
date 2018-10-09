@@ -1,0 +1,144 @@
+#!/usr/bin/env python
+"""--------------------------------------------------------------------
+COPYRIGHT 2018 Waypoint Robotics Inc.
+
+Software License Agreement:
+
+The software supplied herewith by Waypoint Robotics Inc. (the "Company") 
+for its licensed SI Vector Platform is intended and supplied to you, 
+the Company's customer, for use solely and exclusively with Waypoint Robotics 
+products. The software is owned by the Company and/or its supplier, and is 
+protected under applicable copyright laws.  All rights are reserved. Any use in 
+violation of the foregoing restrictions may subject the user to criminal 
+sanctions under applicable laws, as well as to civil liability for the 
+breach of the terms and conditions of this license. The Company may 
+immediately terminate this Agreement upon your use of the software with 
+any products that are not Waypoint Robotics products.
+
+The software was written using Python programming language.  Your use 
+of the software is therefore subject to the terms and conditions of the 
+OSI- approved open source license viewable at http://www.python.org/.  
+You are solely responsible for ensuring your compliance with the Python 
+open source license.
+
+You shall indemnify, defend and hold the Company harmless from any claims, 
+demands, liabilities or expenses, including reasonable attorneys fees, incurred 
+by the Company as a result of any claim or proceeding against the Company 
+arising out of or based upon: 
+
+(i) The combination, operation or use of the software by you with any hardware, 
+    products, programs or data not supplied or approved in writing by the Company, 
+    if such claim or proceeding would have been avoided but for such combination, 
+    operation or use.
+ 
+(ii) The modification of the software by or on behalf of you 
+
+(iii) Your use of the software.
+
+ THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTIES,
+ WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED
+ TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,
+ IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR
+ CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+ 
+ \file   sync_laserscan_and_odom.py
+
+ \brief  This node serves to setup simulation 
+
+ \Platform: Linux/ROS Indigo
+--------------------------------------------------------------------"""
+import rospy
+from std_msgs.msg import Empty,Float32,Bool,UInt32
+from sensor_msgs.msg import LaserScan
+from nav_msgs.msg import Odometry
+from vector_msgs.msg import *
+
+TRACTOR_REQUEST=5
+STANDBY_REQUEST=4
+POWERDOWN_REQUEST=6
+
+WEB_MODES_DICT = dict({"tractor":5,"standby":4,"power_down":6})
+ROBOT_MODES_DICT = dict({5:"tractor",4:"standby",6:"power_down"})
+
+class WebTopics(object):
+    def __init__(self):
+    
+        self._is_sim = rospy.get_param('~sim', False)
+    
+        self._p = dict()
+        self._p['base_scan_filtered'] = rospy.Publisher('/waypoint/base_scan_filtered', LaserScan, queue_size=10)
+        self._p['gp_command']         = rospy.Publisher('/vector/gp_command', ConfigCmd, queue_size=10)
+        self._p['odometry/local_filtered'] = rospy.Publisher('/waypoint/odometry/local_filtered', Odometry, queue_size=10)
+        self._p['aux_battery_soc'] = rospy.Publisher("/waypoint/aux_battery_soc", Float32, queue_size=10)
+        self._p['embedded_response_active'] = rospy.Publisher("/waypoint/embedded_response_active", Bool, queue_size=10)
+        self._p['operational_state'] = rospy.Publisher("/waypoint/operational_state", UInt32, queue_size=10)
+        
+    
+        self._s = []
+        self._s.append(rospy.Subscriber('/vector/base_scan_filtered',LaserScan,self._relay_laserscan))
+        self._s.append(rospy.Subscriber('/waypoint/set_tractor',Empty,self._set_tractor_mode))
+        self._s.append(rospy.Subscriber('/waypoint/set_standby',Empty,self._set_standby_mode))
+        self._s.append(rospy.Subscriber("/vector/odometry/local_filtered", Odometry, self._relay_odom))
+        self._s.append(rospy.Subscriber("/vector/feedback/battery", Battery, self._relay_battery))
+        self._s.append(rospy.Subscriber("/vector/feedback/status", Status, self._relay_status))
+    
+    def Shutdown(self):
+        for i, pub in self._p.items():
+            pub.unregister()
+        for sub in self._s:
+            sub.unregister()        
+    
+    def _relay_laserscan(self,msg):
+        if not rospy.is_shutdown():
+            self._p['base_scan_filtered'].publish(msg)
+
+    def _set_tractor_mode(self,msg):
+        if not rospy.is_shutdown():
+            cmd = ConfigCmd()
+            cmd.header.stamp = rospy.get_rostime()
+            cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE'
+            cmd.gp_param = TRACTOR_REQUEST
+            self._p['gp_command'].publish(cmd)
+            if self._is_sim:
+                tmp = UInt32()
+                tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[TRACTOR_REQUEST]]         
+                self._p['operational_state'].publish(tmp)
+
+    def _set_standby_mode(self,msg):
+        if not rospy.is_shutdown():
+            cmd = ConfigCmd()
+            cmd.header.stamp = rospy.get_rostime()
+            cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE'
+            cmd.gp_param = STANDBY_REQUEST
+            self._p['gp_command'].publish(cmd)
+            if self._is_sim:
+                tmp = UInt32()
+                tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[STANDBY_REQUEST]]         
+                self._p['operational_state'].publish(tmp)
+    
+    def _relay_odom(self,msg):
+        if not rospy.is_shutdown():
+            self._p['odometry/local_filtered'].publish(msg)
+            
+    def _relay_battery(self,msg):
+        if not rospy.is_shutdown():
+            tmp = Float32()
+            tmp.data = msg.battery_soc 
+            self._p['aux_battery_soc'].publish(tmp)
+
+    def _relay_status(self,msg):
+        if not rospy.is_shutdown():
+            tmp = UInt32()
+            tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[msg.operational_state]]         
+            self._p['operational_state'].publish(tmp)
+            
+            if (0 != msg.dynamic_response):
+                tmp = Empty()
+                self._p['embedded_response_active'].publish(tmp)
+ 
+if __name__ == "__main__":
+    rospy.init_node('web_topics')
+    web_topics = WebTopics()
+    rospy.on_shutdown(web_topics.Shutdown)
+    rospy.spin()

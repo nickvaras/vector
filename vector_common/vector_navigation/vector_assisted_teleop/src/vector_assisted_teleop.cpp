@@ -213,8 +213,12 @@ namespace assisted_teleop {
         best = scaling_factor * best;
       }
 
-      geometry_msgs::Twist best_cmd;
-      best_cmd.linear.x = best[0];
+     geometry_msgs::Twist best_cmd;
+      if(fabs(best[0])<0.05){
+        best_cmd.linear.x = 0;  
+      }else{
+        best_cmd.linear.x = best[0];
+      }
       best_cmd.linear.y = best[1];
       best_cmd.angular.z = best[2];
       if (true == vel_cmd_has_updated2)

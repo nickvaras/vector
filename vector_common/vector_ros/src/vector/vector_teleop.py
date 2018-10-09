@@ -430,6 +430,7 @@ class VectorTeleop(object):
                 elif self.button_state['dead_man'] and not self.zero_joy_commands:
                     self.no_input_frames = 0 
                     self.frames_of_zero_command = 0
+
                     if (abs(self.axis_value['jog_x']) > 0.0) or (abs(self.axis_value['jog_y']) > 0.0):
                         self.motion_cmd.linear.x =  (self.axis_value['jog_x'] * self.jog_velocity_lim)
                         self.motion_cmd.linear.y =  (self.axis_value['jog_y'] * self.jog_velocity_lim)

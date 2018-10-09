@@ -22,4 +22,7 @@
     <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam"
         args="load /vector/vector_driver $(find vector_bringup)/launch/platform/config/vector_params.yaml" />
         
+    <!-- Node for publishing web topics for the dispatch UI-->
+    <node name="web_topics" pkg="si_utils" type="web_topics" /> 
+        
 </launch>

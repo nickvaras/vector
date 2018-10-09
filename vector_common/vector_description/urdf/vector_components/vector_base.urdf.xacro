@@ -45,15 +45,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                          izx="-0.086662" izy="0.000468"  izz="15.218700" />
 	    </inertial>
             <collision>
-				<geometry>
-					<mesh filename="package://vector_description/meshes/vector_components/collision/vector_base_collision.stl" />
-				</geometry>
+                <xacro:if value="$(optenv SI_DEV_VECTOR false)">
+				    <geometry>
+					    <mesh filename="package://vector_description/meshes/vector_components/collision/vector_bw_base_collision.stl" />
+				    </geometry>
+				</xacro:if>
+                <xacro:unless value="$(optenv SI_DEV_VECTOR false)">
+				    <geometry>
+					    <mesh filename="package://vector_description/meshes/vector_components/collision/vector_base_collision.stl" />
+				    </geometry>
+				</xacro:unless>
 			</collision>
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0" />
-				<geometry>
-					<mesh filename="package://vector_description/meshes/vector_components/visual/vector_base.dae" />
-				</geometry>
+                <xacro:if value="$(optenv SI_DEV_VECTOR false)">
+				    <geometry>
+					    <mesh filename="package://vector_description/meshes/vector_components/visual/vector_bw_base.dae" />
+				    </geometry>
+				</xacro:if>
+                <xacro:unless value="$(optenv SI_DEV_VECTOR false)">
+				    <geometry>
+					    <mesh filename="package://vector_description/meshes/vector_components/visual/vector_base.dae" />
+				    </geometry>
+				</xacro:unless>
 			</visual>
 		</link>
 		
@@ -80,20 +94,33 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                          izx="0.000007" izy="0.000002" izz="0.309399" />
 			</inertial>
             <collision>
-				<geometry>
-					<mesh filename="package://vector_description/meshes/vector_components/collision/std_payload_plate_collision.stl" />
-					
-				</geometry>
+                <xacro:if value="$(optenv SI_DEV_VECTOR false)">
+				    <geometry>
+					    <mesh filename="package://vector_description/meshes/vector_components/collision/dev_payload_plate_collision.stl" />
+				    </geometry>
+				</xacro:if>
+                <xacro:unless value="$(optenv SI_DEV_VECTOR false)">
+				    <geometry>
+					    <mesh filename="package://vector_description/meshes/vector_components/collision/std_payload_plate_collision.stl" />
+				    </geometry>
+				</xacro:unless>
 			</collision>
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0" />
-				<geometry>
-					<mesh filename="package://vector_description/meshes/vector_components/visual/std_payload_plate.dae" />
-				</geometry>
+                <xacro:if value="$(optenv SI_DEV_VECTOR false)">
+				    <geometry>
+					    <mesh filename="package://vector_description/meshes/vector_components/visual/dev_payload_plate.dae" />
+				    </geometry>
+				</xacro:if>
+                <xacro:unless value="$(optenv SI_DEV_VECTOR false)">
+				    <geometry>
+					    <mesh filename="package://vector_description/meshes/vector_components/visual/std_payload_plate.dae" />
+				    </geometry>
+				</xacro:unless>
 			</visual>
 		</link>
 		
-        <gazebo reference="base_chassis_link">
+        <gazebo reference="payload_plate_link">
 			<mu1 value="0.3"/>
 			<mu2 value="0.3"/>
 			<kp value="10000000.0" />
