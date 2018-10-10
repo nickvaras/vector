@@ -15,7 +15,7 @@ export VECTOR_IP_PORT_NUM=8080
 # - f710 - The Logitech F710 Wireless Joystick (in XINPUT mode)
 # - f310 - The Logitech F310 Wired Joystick (in XINPUT mode)
 # - (not supported yet) x3dp - The Logitech Extreme 3D Pro Joystick (not supported yet)   
-export VECTOR_JOY_TYPE=ds4
+export VECTOR_JOY_TYPE=f310
 
 # Joystick deadzone (smaller value increases sensitivity to small movements)
 export VECTOR_JOY_DEADZONE=0.1
@@ -41,7 +41,8 @@ export VECTOR_HAS_SAFETY_LASERS=true
 # Used to determine if the system is equipped with a vlp16
 export VECTOR_HAS_VLP16=false
 
-
+# Used to determine if the system is equipped with a webcam for remote video
+export VECTOR_HAS_WEBCAM=false
 
 
 
