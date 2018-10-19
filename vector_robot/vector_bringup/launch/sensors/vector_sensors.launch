@@ -198,7 +198,7 @@
         </node>
     </group>
 
-    <group unless="$(optenv VECTOR_HAS_WEBCAM false)">
+    <group if="$(optenv VECTOR_HAS_WEBCAM false)">
     
         <node pkg="cv_camera" type="cv_camera_node" name="cv_camera"/>
 
