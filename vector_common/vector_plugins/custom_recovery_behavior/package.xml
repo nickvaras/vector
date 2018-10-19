@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>custom_recovery</name>
+  <version>0.0.0</version>
+  <description>The custom_recovery package</description>
+
+  <maintainer email="nickv@waypointrobotics.com">Nicolas Varas</maintainer>
+
+  <license>BSD</license>
+
+  <url type="repository">http://tbd.com/custom-recovery</url>
+  <url type="bugtracker">http://tbd.com/custom-recovery/issues</url>
+  <url type="documentation">http://tbd.com/custom-recovery</url>
+
+  <author email="nickv@waypointrobotics.com">Nicolas Varas</author>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>tf</depend>
+  <depend>costmap_2d</depend>
+  <depend>nav_core</depend>
+  <depend>pluginlib</depend>
+  <depend>base_local_planner</depend>
+
+  <export>
+    <nav_core plugin="${prefix}/custom_recovery_plugin.xml"/>
+  </export>
+</package>

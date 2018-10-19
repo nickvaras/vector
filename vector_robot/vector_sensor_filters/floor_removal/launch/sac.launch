@@ -1,0 +1,121 @@
+<launch>
+  <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+
+  <!-- Run a VoxelGrid filter to clean NaNs and downsample the data -->
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_y" args="load pcl/VoxelGrid pcl_manager" output="screen">
+    <remap from="~input" to="/velodyne_points" />
+    <remap from="~output" to="/voxel_downsample/output_y" />
+    <rosparam>
+      filter_field_name: y
+      filter_limit_min: -5.0
+      filter_limit_max: 5.0
+      filter_limit_negative: False
+      leaf_size: 0.05
+    </rosparam>
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_x" args="load pcl/VoxelGrid pcl_manager" output="screen">
+    <remap from="~input" to="/voxel_downsample/output_y" />
+    <remap from="~output" to="/voxel_downsample/output_x" />
+    <rosparam>
+      filter_field_name: x
+      filter_limit_min: -5.0
+      filter_limit_max: 5.0
+      filter_limit_negative: False
+      leaf_size: 0.05
+    </rosparam>
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_z" args="load pcl/VoxelGrid pcl_manager" output="screen">
+    <!-- <remap from="~input" to="/camera/depth/points_throttle" /> -->
+    <remap from="~input" to="/voxel_downsample/output_x" />
+    <remap from="~output" to="/voxel_downsample/output_z" />
+    <rosparam>
+      filter_field_name: z
+      filter_limit_min: -20.0
+      filter_limit_max: 1.2
+      filter_limit_negative: False
+      leaf_size: 0.01
+    </rosparam>
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_floor" args="load pcl/VoxelGrid pcl_manager" output="screen">
+    <remap from="~input" to="/voxel_downsample/output_z" />
+    <remap from="~output" to="/voxel_downsample/near_floor" />
+    <rosparam>
+      filter_field_name: z
+      filter_limit_min: -20.0
+      filter_limit_max: -0.1
+      filter_limit_negative: False
+      leaf_size: 0.01
+    </rosparam>
+  </node>
+
+  <!-- Estimate point normals -->
+  <!-- <node pkg="nodelet" type="nodelet" name="normal_estimation" args="load pcl/NormalEstimation pcl_manager" output="screen">
+    <remap from="~input" to="/voxel_downsample/near_floor" />
+    <rosparam>
+      # -[ Mandatory parameters
+      k_search: 0
+      radius_search: 0.15
+      # Set the spatial locator. Possible values are: 0 (ANN), 1 (FLANN), 2 (organized)
+      spatial_locator: 0
+    </rosparam>
+  </node> -->
+
+  <!-- Segment the plane -->
+  <!-- <node pkg="nodelet" type="nodelet" name="planar_segmentation" args="load pcl/SACSegmentationFromNormals pcl_manager" output="screen"> -->
+  <node pkg="nodelet" type="nodelet" name="planar_segmentation" args="load pcl/SACSegmentation pcl_manager" output="screen">
+    <remap from="~input"   to="/voxel_downsample/near_floor" />
+    <!-- <remap from="~normals" to="/normal_estimation/output" /> -->
+    <rosparam>
+      # -[ Mandatory parameters
+      # model_type:
+      # 0: SACMODEL_PLANE
+      # 1: SACMODEL_LINE
+      # 2: SACMODEL_CIRCLE2D
+      # 3: SACMODEL_CIRCLE3D
+      # 4: SACMODEL_SPHERE
+      # 5: SACMODEL_CYLINDER
+      # 6: SACMODEL_CONE
+      # 7: SACMODEL_TORUS
+      # 8: SACMODEL_PARALLEL_LINE
+      # 9: SACMODEL_PERPENDICULAR_PLANE
+      # 10: SACMODEL_PARALLEL_LINES
+      # 11: SACMODEL_NORMAL_PLANE
+      # 12: SACMODEL_NORMAL_SPHERE
+      # 13: SACMODEL_REGISTRATION
+      # 14: SACMODEL_REGISTRATION_2D
+      # 15: SACMODEL_PARALLEL_PLANE
+      # 16: SACMODEL_NORMAL_PARALLEL_PLANE
+      # 17: SACMODEL_STICK
+      model_type: 9
+      method_type: 0
+      distance_threshold: 0.025
+      max_iterations: 1000
+      optimize_coefficients: true
+      # normal_distance_weight: 0.1
+      eps_angle: 0.2
+      axis: [0.0,0.0,1.0]
+    </rosparam>
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="extract_plane_outliers" args="load pcl/ExtractIndices pcl_manager" output="screen">
+    <remap from="~input"   to="/voxel_downsample/near_floor" />
+    <remap from="~indices" to="/planar_segmentation/inliers" />
+    <remap from="~output" to="/minus_floor" />
+    <rosparam>
+      negative: true
+      <!-- approximate_sync: true -->
+    </rosparam>
+  </node>
+
+  <node pkg="nodelet" type="nodelet" name="filter_floor_obstacles" args="load pcl/RadiusOutlierRemoval pcl_manager" output="screen">
+    <remap from="~input"   to="/minus_floor" />
+    <remap from="~output" to="/minus_floor_filtered" />
+    <rosparam>
+        radius_search: 0.1
+        min_neighbors_in_radius: 1
+    </rosparam>
+  </node>
+</launch>
