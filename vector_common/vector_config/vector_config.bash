@@ -42,7 +42,7 @@ export VECTOR_HAS_SAFETY_LASERS=true
 export VECTOR_HAS_VLP16=false
 
 # Used to determine if the system is equipped with a webcam for remote video
-export VECTOR_HAS_WEBCAM=false
+export VECTOR_HAS_WEBCAM=true
 
 
 
