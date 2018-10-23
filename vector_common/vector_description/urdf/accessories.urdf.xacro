@@ -26,6 +26,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 <robot name="vector_accessories" xmlns:xacro="http://ros.org/wiki/xacro">
     <xacro:include filename="$(find vector_description)/urdf/sensors/sick_tim.urdf.xacro"/>
     <xacro:include filename="$(find vector_description)/urdf/sensors/hokuyo_uam_05lp.urdf.xacro"/>
+    <xacro:include filename="$(find vector_description)/urdf/sensors/webcam.urdf.xacro"/>
     <xacro:include filename="$(find vector_description)/urdf/sensors/velodyne_vlp16.urdf.xacro"/>
     <xacro:include filename="$(find vector_description)/urdf/vector_components/vector_vlp16_mount.urdf.xacro"/>
 
@@ -64,7 +65,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                 <origin xyz="-0.306500 0 0.142068" rpy="${M_PI} 0 ${M_PI}" />
             </xacro:sick_tim>  
         </xacro:if>
-        
+      
         <xacro:unless value="$(optenv SI_DEV_VECTOR false)">
             
             <xacro:unless value="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
@@ -93,7 +94,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
             <xacro:velodyne_vlp16 parent="base_chassis_link">
                 <origin xyz="0 0 0.315507" rpy="0 0 0" />
             </xacro:velodyne_vlp16>
-        </xacro:if>            
+        </xacro:if>      
+
+        <xacro:if value="$(optenv VECTOR_HAS_WEBCAM false)">
+            <xacro:webcam parent="base_chassis_link"/>
+        </xacro:if>      
         
     </xacro:macro>
 </robot>
