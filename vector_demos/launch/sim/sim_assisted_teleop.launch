@@ -27,4 +27,9 @@
         args="18 vector_viz view_robot.launch function:=assisted_teleop"
         name="viz_bringup" output="screen"/>
 
+        <!-- If 3d, start SAC segmentation -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="21 floor_removal sac.launch"
+        name="floor_removal" output="screen" if="$(optenv VECTOR_HAS_VLP16 false)"/>
+
 </launch>

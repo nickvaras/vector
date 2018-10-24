@@ -1,7 +1,7 @@
 <library path="lib/libcustom_recovery">
   <class name="custom_recovery/CustomRecovery" type="custom_recovery::CustomRecovery" base_class_type="nav_core::RecoveryBehavior">
     <description>
-      A recovery behavior that performs a custom recovery behavior.
+      A recovery behavior that moves the robot within its unoccupied neighboring costmap, hoping to scan and clear ghost voxels.
     </description>
   </class>
 </library>

@@ -205,9 +205,9 @@
     
         <node pkg="cv_camera" type="cv_camera_node" name="cv_camera"/>
 
-        <node pkg="web_video_server" type="web_video_server" name="web_video_server">
+        <!-- <node pkg="web_video_server" type="web_video_server" name="web_video_server">
             <param name="port" value="8085"/>
-        </node>
+        </node> -->
 
     </group>
     
