@@ -23,4 +23,7 @@
         args="9 vector_bringup vector_teleop.launch"
         name="teleop_bringup" output="screen"/>
         
+  <!-- NOTE:  This is a "root" launchfile. Any changes to this file will not take effect when launching as a service, until the 
+        "rosrun vector_bringup install-vector-core" is run. -->
+
 </launch>
