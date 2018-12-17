@@ -213,6 +213,10 @@ class VectorTeleop(object):
         self._pubs.append(self.motion_pub)
         self.override_pub = rospy.Publisher("/vector/manual_override/cmd_vel",Twist, queue_size=10)
         self._pubs.append(self.override_pub)
+        
+        self._max_rates = [self.accel_lim,self.accel_lim,self.yaw_accel_lim]
+        self._rate_cmds = [0.0,0.0,0.0]
+        self._cmd_rate_limit = RateLimitSignals(self._max_rates,3,self._rate_cmds)
 
         self.cfg_cmd.header.stamp = rospy.get_rostime()
         self.cfg_cmd.gp_cmd = "GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE"
@@ -282,7 +286,10 @@ class VectorTeleop(object):
         self.accel_lim = config.teleop_accel_limit_mps2
         self.yaw_accel_lim = config.teleop_yaw_accel_limit_rps2
         self.jog_velocity_lim = config.jog_velocity_mps
-        self.jog_yaw_lim = config.jog_yaw_rate_rps               
+        self.jog_yaw_lim = config.jog_yaw_rate_rps
+        
+        self._max_rates = [self.accel_lim,self.accel_lim,self.yaw_accel_lim]
+        self._cmd_rate_limit.SetMaxRate(self._max_rates)              
     
     def _update_joy_status(self,msg):
   
@@ -419,6 +426,8 @@ class VectorTeleop(object):
                     self.motion_cmd.angular.z = 0.0
                     self.limited_cmd = self.motion_cmd
                     self.override_pub.publish(self.motion_cmd)
+                    self._cmd_rate_limit.Reset([0.0,0.0,0.0])    
+        
                 elif (self.zero_joy_commands) and (self.frames_of_zero_command < 10):
                     self.motion_cmd.linear.x = 0.0
                     self.motion_cmd.linear.y = 0.0
@@ -427,6 +436,7 @@ class VectorTeleop(object):
                     self.override_pub.publish(self.motion_cmd)
                     self.motion_pub.publish(self.motion_cmd)
                     self.frames_of_zero_command += 1
+                    self._cmd_rate_limit.Reset([0.0,0.0,0.0])
                 elif self.button_state['dead_man'] and not self.zero_joy_commands:
                     self.no_input_frames = 0 
                     self.frames_of_zero_command = 0
@@ -439,17 +449,14 @@ class VectorTeleop(object):
                         self.motion_cmd.linear.x =  (self.axis_value['for_aft'] * self.x_vel_limit_mps)
                         self.motion_cmd.linear.y =  (self.axis_value['left_right'] * self.y_vel_limit_mps)
                         self.motion_cmd.angular.z = (self.axis_value['twist'] * self.yaw_rate_limit_rps)
+                        
+                    self._rate_cmds = [self.motion_cmd.linear.x,self.motion_cmd.linear.y,self.motion_cmd.angular.z]
+                    rate_limited_cmds = self._cmd_rate_limit.Update(self._rate_cmds)
                     
-                    self.limited_cmd.linear.x = slew_limit(self.motion_cmd.linear.x,
-                                                           self.limited_cmd.linear.x,
-                                                           self.accel_lim, dt)
-                    self.limited_cmd.linear.y = slew_limit(self.motion_cmd.linear.y,
-                                                           self.limited_cmd.linear.y,
-                                                           self.accel_lim, dt)
-                    self.limited_cmd.angular.z = slew_limit(self.motion_cmd.angular.z,
-                                                           self.limited_cmd.angular.z,
-                                                           self.yaw_accel_lim, dt)
-                                                           
+                    self.limited_cmd.linear.x = rate_limited_cmds[0]
+                    self.limited_cmd.linear.y = rate_limited_cmds[1]
+                    self.limited_cmd.angular.z = rate_limited_cmds[2]
+                    
                     if (self.button_state['man_ovvrd']):
                         self.override_pub.publish(self.limited_cmd)
                     else:
@@ -459,6 +466,7 @@ class VectorTeleop(object):
                     self.motion_cmd.linear.x = 0.0
                     self.motion_cmd.linear.y = 0.0
                     self.motion_cmd.angular.z = 0.0
+                    self._cmd_rate_limit.Reset([0.0,0.0,0.0])
                     self.limited_cmd = self.motion_cmd
                     if (self.no_input_frames < 10): 
                         self.override_pub.publish(self.limited_cmd)

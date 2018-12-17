@@ -54,6 +54,41 @@ from crc32 import calc_crc32, valid_crc32
 import array
 from system_defines import *
 import timeit
+from copy import deepcopy
+import rospy
+
+class RateLimitSignals(object):
+    def __init__(self,max_rate,num_sigs=1,sig_init=[0.0]):
+        self._max_rate = max_rate
+        self._sigout = deepcopy(sig_init)
+        self._sigin  = deepcopy(sig_init)
+        self._numsigs = num_sigs
+        self._prev_time = rospy.get_time()
+    
+    def SetMaxRate(self,rate):
+        self._max_rate = rate
+    def Reset(self,sig_init=[0.0]):
+        self._sigout = deepcopy(sig_init)
+        self._sigin  = deepcopy(sig_init)
+        self._prev_time = rospy.get_time()
+    def Update(self,sigin):
+        self._sigin  = deepcopy(sigin)
+        now = rospy.get_time()
+        dt = now - self._prev_time
+        self._prev_time = now
+        if (dt > 0.0):
+            for i in range(self._numsigs):
+                requested_rate = (self._sigin[i] - self._sigout[i])/dt
+                            
+                if (requested_rate > self._max_rate[i]):
+                    self._sigout[i] += self._max_rate[i] * dt
+                elif (requested_rate < -self._max_rate[i]):
+                    self._sigout[i] += -self._max_rate[i] * dt
+                else:
+                    self._sigout[i] = sigin[i]
+        ret = deepcopy(self._sigout)
+        
+        return ret
 
 """
 slew limit funtion to limit the maximum rate of change
