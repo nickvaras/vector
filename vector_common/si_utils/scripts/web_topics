@@ -74,6 +74,7 @@ class WebTopics(object):
         self._p['aux_battery_soc'] = rospy.Publisher("/waypoint/aux_battery_soc", Float32, queue_size=10)
         self._p['embedded_response_active'] = rospy.Publisher("/waypoint/embedded_response_active", Bool, queue_size=10)
         self._p['operational_state'] = rospy.Publisher("/waypoint/operational_state", UInt32, queue_size=10)
+        self._p['battery_is_charging'] = rospy.Publisher("/waypoint/battery_is_charging", Bool, queue_size=10)
         
     
         self._s = []
@@ -132,9 +133,14 @@ class WebTopics(object):
     def _relay_battery(self,msg):
         if not rospy.is_shutdown():
             tmp = Float32()
-            tmp.data = msg.battery_soc 
+            tmp.data = msg.battery_soc
+            tmp2 = Bool()
+            tmp2.data=False
+            if (0x00000100 == (0x00000100 & msg.battery_status)):
+                tmp2.data = True 
             if not self.terminate:
                 self._p['aux_battery_soc'].publish(tmp)
+                self._p['battery_is_charging'].publish(tmp2)
 
     def _relay_status(self,msg):
         if not rospy.is_shutdown():
