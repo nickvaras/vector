@@ -352,6 +352,24 @@ Sets the flag to send continuous data at system frequency (100.0Hz)
 """
 GENERAL_PURPOSE_CMD_SEND_CONTINUOUS_DATA    = (5)
 
+"""
+Sets a straffe correction factor in odometry
+"""
+GENERAL_PURPOSE_CMD_SET_STRAFE_CORRECTION   = (6)
+
+"""
+Sets a yaw correction factor in odometry
+"""
+GENERAL_PURPOSE_CMD_SET_YAW_CORRECTION      = (7)
+
+"""
+Sets the laser feild selection for the purpose of docking the robot
+0: General operation
+1: Docking feild selection
+"""
+GENERAL_PURPOSE_CMD_LASER_FEILD_SELECTION   = (8)
+
+
 """------------------------------------------------------------------------
 RMP Fault definitions
 This section is used to define the decoding of fault status words sent 

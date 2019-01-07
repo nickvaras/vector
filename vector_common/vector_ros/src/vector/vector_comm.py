@@ -74,6 +74,7 @@ command_ids = dict({"GENERAL_PURPOSE_CMD_NONE":                   0,
                     "GENERAL_PURPOSE_CMD_RESET_PARAMS_TO_DEFAULT":4,
                     "GENERAL_PURPOSE_CMD_SET_STRAFE_CORRECTION"  :6,
                     "GENERAL_PURPOSE_CMD_SET_YAW_CORRECTION"     :7,
+                    "GENERAL_PURPOSE_CMD_LASER_FEILD_SELECTION"  :8,
                     "SIC_CMD_RESET_IN_DIAGNOSTIC_MODE":1001})
 
 class VectorDriver:
