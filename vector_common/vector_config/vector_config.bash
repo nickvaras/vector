@@ -39,10 +39,10 @@ fi
 export VECTOR_HAS_SAFETY_LASERS=true
 
 # Used to determine if the system is equipped with a vlp16
-export VECTOR_HAS_VLP16=false
+export VECTOR_HAS_VLP16=true
 
 # Used to determine if the system is equipped with a webcam for remote video
 export VECTOR_HAS_WEBCAM=false
 
 # Used to determine if the system is equipped with a realsense depth camera
-export VECTOR_HAS_REALSENSE=true
+export VECTOR_HAS_REALSENSE=false

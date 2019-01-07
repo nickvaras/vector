@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="webcam">
  <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
- <xacro:macro name="webcam" params="parent">
+ <xacro:macro name="webcam" params="parent *origin">
   <joint name="camera_joint" type="fixed">
-    <axis xyz="0 1 0" />
-    <origin xyz="0.27 0 0.09" rpy="0 0 0"/>
+    <xacro:insert_block name="origin" />
     <parent link="${parent}"/>
     <child link="camera_link"/>
   </joint>
@@ -29,6 +28,18 @@
       <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
     </inertial>
   </link>
+
+  <joint name="camera_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    <parent link="camera_link"/>
+    <child link="camera_link_optical"/>
+  </joint>
+
+  <link name="camera_link_optical">
+  <!-- This link exists for the real world cameras. OpenCV uses a different axis
+  convention than the virtual camera in gazebo, hence the "optical" link -->
+  </link>
+
 <!-- camera -->
   <gazebo reference="camera_link">
     <sensor type="camera" name="camera1">

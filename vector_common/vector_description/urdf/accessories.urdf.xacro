@@ -88,6 +88,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                 <xacro:hokuyo_uam_05lp laser_prefix="rear" parent="base_chassis_link">
                     <origin xyz="-0.252995 -0.192212 0.137128" rpy="${M_PI} 0 ${5*M_PI/4}" />
                 </xacro:hokuyo_uam_05lp>
+                
             </xacro:if>
         </xacro:unless>
         
@@ -99,7 +100,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         </xacro:if>      
 
         <xacro:if value="$(optenv VECTOR_HAS_WEBCAM false)">
-            <xacro:webcam parent="base_chassis_link"/>
+            <xacro:webcam parent="base_chassis_link">
+                <origin xyz="0.27 0 0.09" rpy="0 0 0"/>
+            </xacro:webcam>
         </xacro:if>      
 
         <xacro:if value="$(optenv VECTOR_HAS_REALSENSE false)">

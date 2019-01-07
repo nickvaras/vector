@@ -49,7 +49,7 @@ arising out of or based upon:
  \Platform: Linux/ROS Indigo
 --------------------------------------------------------------------"""
 import rospy
-from std_msgs.msg import Empty,Float32,Bool,UInt32
+from std_msgs.msg import Empty,Float32,Bool,UInt32, UInt8
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from vector_msgs.msg import *
@@ -72,7 +72,8 @@ class WebTopics(object):
         self._p['odometry/local_filtered'] = rospy.Publisher('/waypoint/odometry/local_filtered', Odometry, queue_size=10)
         self._p['aux_battery_soc'] = rospy.Publisher("/waypoint/aux_battery_soc", Float32, queue_size=10)
         self._p['embedded_response_active'] = rospy.Publisher("/waypoint/embedded_response_active", Bool, queue_size=10)
-        self._p['operational_state'] = rospy.Publisher("/waypoint/operational_state", UInt32, queue_size=10)
+        # self._p['operational_state'] = rospy.Publisher("/waypoint/operational_state", UInt32, queue_size=10)
+        self._p['operational_state'] = rospy.Publisher("/waypoint/operational_state", UInt8, queue_size=10)
         
     
         self._s = []
@@ -101,7 +102,8 @@ class WebTopics(object):
             cmd.gp_param = TRACTOR_REQUEST
             self._p['gp_command'].publish(cmd)
             if self._is_sim:
-                tmp = UInt32()
+                # tmp = UInt32()
+                tmp = UInt8()
                 tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[TRACTOR_REQUEST]]         
                 self._p['operational_state'].publish(tmp)
 
@@ -113,7 +115,8 @@ class WebTopics(object):
             cmd.gp_param = STANDBY_REQUEST
             self._p['gp_command'].publish(cmd)
             if self._is_sim:
-                tmp = UInt32()
+                # tmp = UInt32()
+                tmp = UInt8()
                 tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[STANDBY_REQUEST]]         
                 self._p['operational_state'].publish(tmp)
     
@@ -127,9 +130,10 @@ class WebTopics(object):
             tmp.data = msg.battery_soc 
             self._p['aux_battery_soc'].publish(tmp)
 
-    def _relay_status(self,msg):
+    def _relay_status(self,msg):    # broken, needs mods. Check Lincoln robot for fix.
         if not rospy.is_shutdown():
-            tmp = UInt32()
+            # tmp = UInt32()
+            tmp = UInt8()
             tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[msg.operational_state]]         
             self._p['operational_state'].publish(tmp)
             

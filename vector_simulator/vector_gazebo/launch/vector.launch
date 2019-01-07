@@ -54,4 +54,21 @@
             file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter.yaml" />
     </node>
 
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan" if="$(optenv VECTOR_HAS_VLP16 false)">
+            <remap from="cloud_in" to="/velodyne_points"/>
+            <remap from="scan" to="/scan_3d" />
+            <param name="min_height" value="-0.105" />
+            <param name="max_height" value="0.105" />
+            <param name="angle_min" value="-3.1416" /> <!-- -pi -->
+            <param name="angle_max" value="3.1416" /> <!-- pi -->
+            <param name="scan_time" value="0.2" />
+            <param name="range_max" value="80.0" />
+            <param name="range_min" value="0.6" />
+            <param name="use_inf" value="true" />
+        </node>
+
+    <node pkg="velodyne_laserscan" type="velodyne_laserscan_node" name="velodyne_level_scan" if="$(optenv VECTOR_HAS_VLP16 false)">
+        <remap from="/scan" to="/velodyne_middle_ring"/>
+    </node>
+
 </launch>
