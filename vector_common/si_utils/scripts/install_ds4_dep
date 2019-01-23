@@ -11,10 +11,11 @@ else
     exit 1
 fi
 
-sudo apt-get install python-pip
+sudo apt-get install python-pip blueman
 sudo pip install evdev
 sudo pip install pyudev
 
 sudo cp /home/$USER/vector_ws/src/vector_common/vector_third_party/ds4drv/udev/50-ds4drv.rules /etc/udev/rules.d/
+sudo cp /home/$USER/vector_ws/src/vector_common/vector_third_party/ds4drv/ds4drv.conf /etc/
 sudo udevadm control --reload-rules
 sudo udevadm trigger
