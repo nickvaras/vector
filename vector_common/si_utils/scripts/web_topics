@@ -65,6 +65,7 @@ class WebTopics(object):
     def __init__(self):
     
         self._is_sim = rospy.get_param('~sim', False)
+        self.terminate = False
     
         self._p = dict()
         self._p['base_scan_filtered'] = rospy.Publisher('/waypoint/base_scan_filtered', LaserScan, queue_size=10)
@@ -85,6 +86,7 @@ class WebTopics(object):
         self._s.append(rospy.Subscriber("/vector/feedback/status", Status, self._relay_status))
     
     def Shutdown(self):
+        self.terminate = True
         for i, pub in self._p.items():
             pub.unregister()
         for sub in self._s:
@@ -92,7 +94,8 @@ class WebTopics(object):
     
     def _relay_laserscan(self,msg):
         if not rospy.is_shutdown():
-            self._p['base_scan_filtered'].publish(msg)
+            if not self.terminate:
+                self._p['base_scan_filtered'].publish(msg)
 
     def _set_tractor_mode(self,msg):
         if not rospy.is_shutdown():
@@ -100,12 +103,14 @@ class WebTopics(object):
             cmd.header.stamp = rospy.get_rostime()
             cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE'
             cmd.gp_param = TRACTOR_REQUEST
-            self._p['gp_command'].publish(cmd)
+            if not self.terminate:
+                self._p['gp_command'].publish(cmd)
             if self._is_sim:
                 # tmp = UInt32()
                 tmp = UInt8()
                 tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[TRACTOR_REQUEST]]         
-                self._p['operational_state'].publish(tmp)
+                if not self.terminate:
+                    self._p['operational_state'].publish(tmp)
 
     def _set_standby_mode(self,msg):
         if not rospy.is_shutdown():
@@ -113,16 +118,19 @@ class WebTopics(object):
             cmd.header.stamp = rospy.get_rostime()
             cmd.gp_cmd = 'GENERAL_PURPOSE_CMD_SET_OPERATIONAL_MODE'
             cmd.gp_param = STANDBY_REQUEST
-            self._p['gp_command'].publish(cmd)
+            if not self.terminate:
+                self._p['gp_command'].publish(cmd)
             if self._is_sim:
                 # tmp = UInt32()
                 tmp = UInt8()
                 tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[STANDBY_REQUEST]]         
-                self._p['operational_state'].publish(tmp)
+                if not self.terminate:
+                    self._p['operational_state'].publish(tmp)
     
     def _relay_odom(self,msg):
         if not rospy.is_shutdown():
-            self._p['odometry/local_filtered'].publish(msg)
+            if not self.terminate:
+                self._p['odometry/local_filtered'].publish(msg)
             
     def _relay_battery(self,msg):
         if not rospy.is_shutdown():
@@ -141,10 +149,16 @@ class WebTopics(object):
             # tmp = UInt32()
             tmp = UInt8()
             tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[msg.operational_state]]         
-            self._p['operational_state'].publish(tmp)
+            if not self.terminate:
+                self._p['operational_state'].publish(tmp)
             
+            tmp = Bool()
             if (0 != msg.dynamic_response):
-                tmp = Empty()
+                tmp.data = True
+            else:
+                tmp.data = False
+                
+            if not self.terminate:
                 self._p['embedded_response_active'].publish(tmp)
  
 if __name__ == "__main__":
