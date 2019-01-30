@@ -9,7 +9,7 @@
 #    and the IP address is DHCP from VECTOR1 access point
 
 if [ "$HOSTNAME" = vector1 ]; then
-    export ROBOT_NETWORK=eth0
+    export ROBOT_NETWORK=br0
     export ROS_IP=$(ip -4 address show $ROBOT_NETWORK | grep 'inet' | sed 's/.*inet \([0-9\.]\+\).*/\1/')
     export ROS_MASTER_URI=http://vector1:11311/
 else

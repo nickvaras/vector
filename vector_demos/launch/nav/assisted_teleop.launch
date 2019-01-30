@@ -2,6 +2,7 @@
 
 <launch>
     <arg name="local" default="true"/>
+    <arg name="wheel_type" value="$(optenv VECTOR_WHEEL_TYPE standard)"/>
 
     <machine name="vector1" address="vector1" user="vector" 
                env-loader="/home/vector/env.sh" default="true" unless="$(arg local)"/>
@@ -21,6 +22,9 @@
         <rosparam file="$(find vector_demos)/config/assisted_teleop/costmap_local.yaml" command="load"/>
         <remap from="teleop_cmd_vel" to="/vector/teleop/cmd_vel" />
         <remap from="cmd_vel" to="/vector/assisted_teleop/cmd_vel" />
+
+        <rosparam if="$(eval 1 if 'HD'==arg('wheel_type') else 0)" ns="local_costmap">footprint: [[0.38,0.31],[0.38,-0.31],[-0.38,-0.31],[-0.38,0.31]]</rosparam>
+        
     </node>
     
 

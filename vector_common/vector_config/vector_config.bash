@@ -41,6 +41,10 @@ export VECTOR_HAS_SAFETY_LASERS=true
 # Used to determine if the system is equipped with a vlp16
 export VECTOR_HAS_VLP16=false
 
+#Supported wheel types are HD and standard
+export VECTOR_WHEEL_TYPE=standard
+
+
 
 
 
