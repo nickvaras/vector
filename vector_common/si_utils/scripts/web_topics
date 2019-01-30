@@ -75,7 +75,7 @@ class WebTopics(object):
         self._p['embedded_response_active'] = rospy.Publisher("/waypoint/embedded_response_active", Bool, queue_size=10)
         self._p['operational_state'] = rospy.Publisher("/waypoint/operational_state", UInt8, queue_size=10)
         self._p['battery_is_charging'] = rospy.Publisher("/waypoint/battery_is_charging", Bool, queue_size=10)
-        
+                
     
         self._s = []
         self._s.append(rospy.Subscriber('/vector/base_scan_filtered',LaserScan,self._relay_laserscan))
@@ -84,6 +84,18 @@ class WebTopics(object):
         self._s.append(rospy.Subscriber("/vector/odometry/local_filtered", Odometry, self._relay_odom))
         self._s.append(rospy.Subscriber("/vector/feedback/battery", Battery, self._relay_battery))
         self._s.append(rospy.Subscriber("/vector/feedback/status", Status, self._relay_status))
+        self._s.append(rospy.Subscriber("/waypoint/set_safety_field", Bool, self._set_safety_field))
+
+    def _set_safety_field(self,state):
+        cfg_cmd = ConfigCmd()
+        cfg_cmd.header.stamp = rospy.get_rostime()
+        cfg_cmd.gp_cmd = "GENERAL_PURPOSE_CMD_LASER_FEILD_SELECTION"
+        if state == False:
+            cfg_cmd.gp_param = 0
+        else:
+            cfg_cmd.gp_param = 1
+        self._p['gp_command'].publish(cfg_cmd)
+
     
     def Shutdown(self):
         self.terminate = True
