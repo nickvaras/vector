@@ -25,7 +25,7 @@
         args="load /vector/vector_driver $(find vector_bringup)/launch/platform/config/vector_params.yaml" if="$(eval 1 if 'standard'==arg('wheel_type') else 0)"/>
         
     <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam"
-        args="load /segway/segway_driver $(find segway_bringup)/launch/platform/config/vector_params_HD.yaml" if="$(eval 1 if 'HD'==arg('wheel_type') else 0)"/>
+        args="load /vector/vector_driver $(find vector_bringup)/launch/platform/config/vector_params_HD.yaml" if="$(eval 1 if 'HD'==arg('wheel_type') else 0)"/>
 
         
     <!-- Node for publishing web topics for the dispatch UI-->
