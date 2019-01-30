@@ -1,5 +1,7 @@
 <!-- Launch file for Vector platform startup -->
 <launch>
+    <arg name="wheel_type" value="$(optenv VECTOR_WHEEL_TYPE standard)"/>
+    
     <!--System watchdog-->
     <node pkg="vector_ros" type="vector_wd" name="vector1_wd" output="screen" if="$(optenv VECTOR_POWERS_PC_ONBOARD false)"/>
         
@@ -20,7 +22,11 @@
     
     <!-- Platform specific configuration -->
     <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam"
-        args="load /vector/vector_driver $(find vector_bringup)/launch/platform/config/vector_params.yaml" />
+        args="load /vector/vector_driver $(find vector_bringup)/launch/platform/config/vector_params.yaml" if="$(eval 1 if 'standard'==arg('wheel_type') else 0)"/>
+        
+    <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam"
+        args="load /segway/segway_driver $(find segway_bringup)/launch/platform/config/vector_params_HD.yaml" if="$(eval 1 if 'HD'==arg('wheel_type') else 0)"/>
+
         
     <!-- Node for publishing web topics for the dispatch UI-->
     <node name="web_topics" pkg="si_utils" type="web_topics" /> 

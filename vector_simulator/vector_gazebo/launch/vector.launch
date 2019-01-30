@@ -7,6 +7,7 @@
     <arg name="x"   default="0.0"/>
     <arg name="y"   default="0.0"/>
     <arg name="z"   default="0.0"/>
+    <arg name="wheel_type" value="$(optenv VECTOR_WHEEL_TYPE standard)"/>
     
     <param name="use_sim_time" value="true" />
     
@@ -51,7 +52,9 @@
         <param name="target_frame" value="base_link" />
         <param name="high_fidelity" value="true" />
         <rosparam command="load" 
-            file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter.yaml" />
+            file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter.yaml" if="$(eval 1 if 'standard'==arg('wheel_type') else 0)"/>
+        <rosparam command="load" 
+            file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter_HD.yaml" if="$(eval 1 if 'HD'==arg('wheel_type') else 0)"/>
     </node>
 
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan" if="$(optenv VECTOR_HAS_VLP16 false)">

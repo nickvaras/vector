@@ -24,6 +24,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     
     <!-- Wheel Mounting Positions and Properties-->
     <xacro:property name="wheel_radius" value="0.0762" />
+    <xacro:property name="wheel_type" value="$(optenv VECTOR_WHEEL_TYPE standard)"/>
 
 	<xacro:macro name="vector_base">
 	
@@ -45,29 +46,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
                          izx="-0.086662" izy="0.000468"  izz="15.218700" />
 	    </inertial>
             <collision>
-                <xacro:if value="$(optenv SI_DEV_VECTOR false)">
+                <xacro:if value="${wheel_type == 'HD'}">
 				    <geometry>
 					    <mesh filename="package://vector_description/meshes/vector_components/collision/vector_bw_base_collision.stl" />
 				    </geometry>
 				</xacro:if>
-                <xacro:unless value="$(optenv SI_DEV_VECTOR false)">
+                <xacro:if value="${wheel_type == 'standard'}">
 				    <geometry>
 					    <mesh filename="package://vector_description/meshes/vector_components/collision/vector_base_collision.stl" />
 				    </geometry>
-				</xacro:unless>
+				</xacro:if>
 			</collision>
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0" />
-                <xacro:if value="$(optenv SI_DEV_VECTOR false)">
+                <xacro:if value="${wheel_type == 'HD'}">
 				    <geometry>
 					    <mesh filename="package://vector_description/meshes/vector_components/visual/vector_bw_base.dae" />
 				    </geometry>
 				</xacro:if>
-                <xacro:unless value="$(optenv SI_DEV_VECTOR false)">
+                <xacro:if value="${wheel_type == 'standard'}">
 				    <geometry>
 					    <mesh filename="package://vector_description/meshes/vector_components/visual/vector_base.dae" />
 				    </geometry>
-				</xacro:unless>
+				</xacro:if>
 			</visual>
 		</link>
 		

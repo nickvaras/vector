@@ -158,7 +158,9 @@
         <param name="target_frame" value="base_link" />
         <param name="high_fidelity" value="true" />
         <rosparam command="load" 
-            file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter.yaml" />
+            file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter.yaml" if="$(eval 1 if 'standard'==arg('wheel_type') else 0)"/>
+        <rosparam command="load" 
+            file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter_HD.yaml" if="$(eval 1 if 'HD'==arg('wheel_type') else 0)"/>
     </node>
     
     <group if="$(optenv VECTOR_HAS_VLP16 false)">
