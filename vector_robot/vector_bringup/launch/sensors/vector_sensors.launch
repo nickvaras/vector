@@ -1,6 +1,8 @@
 <!-- Launch file for Vector sensor startup -->
 
 <launch>
+
+    <arg name="wheel_type" value="$(optenv VECTOR_WHEEL_TYPE standard)"/>
         
     <group unless="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
         <node pkg="sick_tim" type="sick_tim551_2050001" name="front_laser_node" clear_params="true" respawn="true">

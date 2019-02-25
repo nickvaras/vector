@@ -228,7 +228,7 @@ namespace custom_recovery
 
       if (!front && !rear && !left && !right)  // robot cannot go in any direction
       {
-        ROS_FATAL("Unable to recover!");
+        ROS_ERROR("Unable to recover!");
         break;
       }
 

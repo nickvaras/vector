@@ -1,7 +1,7 @@
 #Machine Configuration
 x_vel_limit_mps:                      1.0
-y_vel_limit_mps:                      1.0
-accel_limit_mps2:                     2.5
+y_vel_limit_mps:                      0.35
+accel_limit_mps2:                     0.5
 decel_limit_mps2:                     2.5
 dtz_decel_limit_mps2:                 2.5
 yaw_rate_limit_rps:                   1.0
