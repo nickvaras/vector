@@ -156,23 +156,16 @@ class WebTopics(object):
                 self._p['aux_battery_soc'].publish(tmp)
                 self._p['battery_is_charging'].publish(tmp2)
 
-    def _relay_status(self,msg):    # broken, needs mods. Check Lincoln robot for fix.
-        if not rospy.is_shutdown():
-            # tmp = UInt32()
-            tmp = UInt8()
-            tmp.data = WEB_MODES_DICT[ROBOT_MODES_DICT[msg.operational_state]]         
-            if not self.terminate:
-                self._p['operational_state'].publish(tmp)
-            
-            tmp = Bool()
-            if msg.dynamic_response in (0,4):
-                tmp.data = False
+    def _relay_status(self,msg):
+         if not rospy.is_shutdown():
+            operational_stage_msg = UInt8(msg.operational_state)
+            self._p['operational_state'].publish(operational_stage_msg)
+            if int(msg.dynamic_response) in (0,4):
+                self._p['embedded_response_active'].publish(False)
             else:
-                tmp.data = True
-                
-            if not self.terminate:
-                self._p['embedded_response_active'].publish(tmp)
- 
+                self._p['embedded_response_active'].publish(True)
+
+
 if __name__ == "__main__":
     rospy.init_node('web_topics')
     web_topics = WebTopics()
