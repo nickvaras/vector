@@ -1,7 +1,6 @@
 <!-- Launch file for Vector sensor startup -->
 
 <launch>
-
     <arg name="wheel_type" value="$(optenv VECTOR_WHEEL_TYPE standard)"/>
         
     <group unless="$(optenv VECTOR_HAS_SAFETY_LASERS false)">
