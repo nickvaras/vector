@@ -86,11 +86,11 @@ class WebTopics(object):
         self._s.append(rospy.Subscriber("/vector/feedback/status", Status, self._relay_status))
         self._s.append(rospy.Subscriber("/waypoint/set_safety_field", Bool, self._set_safety_field))
 
-    def _set_safety_field(self,state):
+    def _set_safety_field(self,state_msg):
         cfg_cmd = ConfigCmd()
         cfg_cmd.header.stamp = rospy.get_rostime()
         cfg_cmd.gp_cmd = "GENERAL_PURPOSE_CMD_LASER_FEILD_SELECTION"
-        if state == False:
+        if state_msg.data == False:
             cfg_cmd.gp_param = 0
         else:
             cfg_cmd.gp_param = 1
@@ -165,10 +165,10 @@ class WebTopics(object):
                 self._p['operational_state'].publish(tmp)
             
             tmp = Bool()
-            if (0 != msg.dynamic_response):
-                tmp.data = True
-            else:
+            if msg.dynamic_response in (0,4):
                 tmp.data = False
+            else:
+                tmp.data = True
                 
             if not self.terminate:
                 self._p['embedded_response_active'].publish(tmp)
