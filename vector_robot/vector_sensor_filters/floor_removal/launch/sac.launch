@@ -1,8 +1,10 @@
 <launch>
-  <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+  <!-- <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" /> -->
+<!-- formerly all these nodelets were loaded onto its own manager "pcl_manager", now all get loaded to velodyne_nodelet_manager -->
+
 
   <!-- Run a VoxelGrid filter to clean NaNs and downsample the data -->
-  <node pkg="nodelet" type="nodelet" name="voxel_grid_y" args="load pcl/VoxelGrid pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_y" args="load pcl/VoxelGrid velodyne_nodelet_manager" output="screen">
     <remap from="~input" to="/velodyne_points" />
     <remap from="~output" to="/voxel_downsample/output_y" />
     <rosparam>
@@ -14,7 +16,7 @@
     </rosparam>
   </node>
 
-  <node pkg="nodelet" type="nodelet" name="voxel_grid_x" args="load pcl/VoxelGrid pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_x" args="load pcl/PassThrough velodyne_nodelet_manager" output="screen">
     <remap from="~input" to="/voxel_downsample/output_y" />
     <remap from="~output" to="/voxel_downsample/output_x" />
     <rosparam>
@@ -22,11 +24,10 @@
       filter_limit_min: -5.0
       filter_limit_max: 5.0
       filter_limit_negative: False
-      leaf_size: 0.05
     </rosparam>
   </node>
 
-  <node pkg="nodelet" type="nodelet" name="voxel_grid_z" args="load pcl/VoxelGrid pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_z" args="load pcl/VoxelGrid velodyne_nodelet_manager" output="screen">
     <!-- <remap from="~input" to="/camera/depth/points_throttle" /> -->
     <remap from="~input" to="/voxel_downsample/output_x" />
     <remap from="~output" to="/voxel_downsample/output_z" />
@@ -39,7 +40,7 @@
     </rosparam>
   </node>
 
-  <node pkg="nodelet" type="nodelet" name="voxel_grid_floor" args="load pcl/VoxelGrid pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_floor" args="load pcl/PassThrough velodyne_nodelet_manager" output="screen">
     <remap from="~input" to="/voxel_downsample/output_z" />
     <remap from="~output" to="/voxel_downsample/near_floor" />
     <rosparam>
@@ -47,7 +48,6 @@
       filter_limit_min: -20.0
       filter_limit_max: -0.1
       filter_limit_negative: False
-      leaf_size: 0.01
     </rosparam>
   </node>
 
@@ -65,7 +65,7 @@
 
   <!-- Segment the plane -->
   <!-- <node pkg="nodelet" type="nodelet" name="planar_segmentation" args="load pcl/SACSegmentationFromNormals pcl_manager" output="screen"> -->
-  <node pkg="nodelet" type="nodelet" name="planar_segmentation" args="load pcl/SACSegmentation pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="planar_segmentation" args="load pcl/SACSegmentation velodyne_nodelet_manager" output="screen">
     <remap from="~input"   to="/voxel_downsample/near_floor" />
     <!-- <remap from="~normals" to="/normal_estimation/output" /> -->
     <rosparam>
@@ -100,7 +100,7 @@
     </rosparam>
   </node>
 
-  <node pkg="nodelet" type="nodelet" name="extract_plane_outliers" args="load pcl/ExtractIndices pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="extract_plane_outliers" args="load pcl/ExtractIndices velodyne_nodelet_manager" output="screen">
     <remap from="~input"   to="/voxel_downsample/near_floor" />
     <remap from="~indices" to="/planar_segmentation/inliers" />
     <remap from="~output" to="/minus_floor" />
@@ -110,7 +110,7 @@
     </rosparam>
   </node>
 
-  <node pkg="nodelet" type="nodelet" name="filter_floor_obstacles" args="load pcl/RadiusOutlierRemoval pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="filter_floor_obstacles" args="load pcl/RadiusOutlierRemoval velodyne_nodelet_manager" output="screen">
     <remap from="~input"   to="/minus_floor" />
     <remap from="~output" to="/minus_floor_filtered" />
     <rosparam>
