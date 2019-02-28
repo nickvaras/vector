@@ -14,7 +14,7 @@
     </rosparam>
   </node>
 
-  <node pkg="nodelet" type="nodelet" name="voxel_grid_x" args="load pcl/VoxelGrid pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_x" args="load pcl/PassThrough pcl_manager" output="screen">
     <remap from="~input" to="/voxel_downsample/output_y" />
     <remap from="~output" to="/voxel_downsample/output_x" />
     <rosparam>
@@ -22,7 +22,6 @@
       filter_limit_min: -5.0
       filter_limit_max: 5.0
       filter_limit_negative: False
-      leaf_size: 0.05
     </rosparam>
   </node>
 
@@ -39,7 +38,7 @@
     </rosparam>
   </node>
 
-  <node pkg="nodelet" type="nodelet" name="voxel_grid_floor" args="load pcl/VoxelGrid pcl_manager" output="screen">
+  <node pkg="nodelet" type="nodelet" name="voxel_grid_floor" args="load pcl/PassThrough pcl_manager" output="screen">
     <remap from="~input" to="/voxel_downsample/output_z" />
     <remap from="~output" to="/voxel_downsample/near_floor" />
     <rosparam>
@@ -47,7 +46,6 @@
       filter_limit_min: -20.0
       filter_limit_max: -0.1
       filter_limit_negative: False
-      leaf_size: 0.01
     </rosparam>
   </node>
 
