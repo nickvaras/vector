@@ -48,3 +48,6 @@ export VECTOR_HAS_WEBCAM=false
 
 # Used to determine if the system is equipped with a realsense depth camera
 export VECTOR_HAS_REALSENSE=false
+
+# Is this simulation?
+export VECTOR_SIM=true
