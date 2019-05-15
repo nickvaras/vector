@@ -68,13 +68,20 @@
         </node>
     </group>
 
-	<node pkg="si_utils" type="laserscan_to_pcl2" name="front_scan_to_pcl2">
+    <!-- Python Implementation -->
+	<!-- <node pkg="si_utils" type="laserscan_to_pcl2" name="front_scan_to_pcl2">
+	    <remap from="scan" to="/vector/front_scan"/>
+	    <remap from="points2" to="/vector/front_scan_points2"/>
+	</node> -->
+
+    <node pkg="nodelet" type="nodelet" name="front_scan_to_pcl2_manager" args="manager" />
+    <!-- C++ Nodelet Implementation -->
+    <node name="front_scan_to_pcl2" pkg="nodelet" type="nodelet" args="load laserscan_to_pcl2/LaserScanToPCL2Nodelet front_scan_to_pcl2_manager">
 	    <remap from="scan" to="/vector/front_scan"/>
 	    <remap from="points2" to="/vector/front_scan_points2"/>
 	</node>
 
-	<node name="front_scan_statistical_outlier_removal" pkg="nodelet" type="nodelet"
-        args="standalone pcl/StatisticalOutlierRemoval">
+	<node name="front_scan_statistical_outlier_removal" pkg="nodelet" type="nodelet" args="load pcl/StatisticalOutlierRemoval front_scan_to_pcl2_manager">
 		<remap from="~input" to="/vector/front_scan_points2" />
 		<remap from="~output" to="/vector/filtered_front_scan_points2" />
 		<rosparam>mean_k: 50</rosparam>
@@ -107,13 +114,22 @@
         </rosparam>
     </node>
     
-	<node pkg="si_utils" type="laserscan_to_pcl2" name="rear_scan_to_pcl2">
+    <!-- Python Implementation -->
+	<!-- <node pkg="si_utils" type="laserscan_to_pcl2" name="rear_scan_to_pcl2">
+	    <remap from="scan" to="/vector/rear_scan"/>
+	    <remap from="points2" to="/vector/rear_scan_points2"/>
+	</node> -->
+
+
+    <node pkg="nodelet" type="nodelet" name="rear_scan_to_pcl2_manager" args="manager" />
+
+    <!-- C++ Nodelet Implementation -->
+    <node name="rear_scan_to_pcl2" pkg="nodelet" type="nodelet" args="load laserscan_to_pcl2/LaserScanToPCL2Nodelet rear_scan_to_pcl2_manager">
 	    <remap from="scan" to="/vector/rear_scan"/>
 	    <remap from="points2" to="/vector/rear_scan_points2"/>
 	</node>
 
-	<node name="rear_scan_statistical_outlier_removal" pkg="nodelet" type="nodelet"
-        args="standalone pcl/StatisticalOutlierRemoval">
+	<node name="rear_scan_statistical_outlier_removal" pkg="nodelet" type="nodelet" args="load pcl/StatisticalOutlierRemoval rear_scan_to_pcl2_manager">
 		<remap from="~input" to="/vector/rear_scan_points2" />
 		<remap from="~output" to="/vector/filtered_rear_scan_points2" />
 		<rosparam>mean_k: 50</rosparam>
