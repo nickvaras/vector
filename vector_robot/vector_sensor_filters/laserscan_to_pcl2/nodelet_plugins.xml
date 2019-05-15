@@ -1,0 +1,7 @@
+<library path="lib/liblaserscan_to_pcl2">
+  <class name="laserscan_to_pcl2/LaserScanToPCL2Nodelet" type="laserscan_to_pcl2::LaserScanToPCL2Nodelet" base_class_type="nodelet::Nodelet">
+  <description>
+  A nodelet implementation of the laserscan to PCL2 converter
+  </description>
+  </class>
+</library>
