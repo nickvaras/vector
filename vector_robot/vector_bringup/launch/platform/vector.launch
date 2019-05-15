@@ -19,6 +19,8 @@
     </node>
   
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+
+    <node name="mecanum_effort" pkg="mecanum_effort" type="mecanum_effort_node"/>
     
     <!-- Platform specific configuration -->
     <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam"
