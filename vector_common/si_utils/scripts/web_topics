@@ -160,7 +160,7 @@ class WebTopics(object):
          if not rospy.is_shutdown():
             operational_stage_msg = UInt8(msg.operational_state)
             self._p['operational_state'].publish(operational_stage_msg)
-            if int(msg.dynamic_response) in (0,4):
+            if int(msg.dynamic_response) in (0,4,6):
                 self._p['embedded_response_active'].publish(False)
             else:
                 self._p['embedded_response_active'].publish(True)
