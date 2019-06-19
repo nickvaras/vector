@@ -1,0 +1,30 @@
+ <launch>
+
+     <arg name="js_type" default="$(optenv VECTOR_JOY_TYPE ds4)"/>
+    
+    <!-- DS4 Driver -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="1 ds4drv ds4drv.launch"
+        name="ds4drv_bringup" output="screen" if="$(eval js_type == 'ds4')"/>
+   
+    <!-- Bring up the platform in sim with all models, controllers, sensors estimates -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="3 vector_gazebo vector_warehouse.launch"
+        name="sim_bringup" output="screen"/>
+        
+    <!-- Bring up the joystick for control -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="7 vector_demos sim_basic_teleop.xml"
+        name="teleop_bringup" output="screen"/>
+        
+    <!-- Bring up the demo -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="15 vector_viz view_robot.launch function:=teleop"
+        name="viz_bringup" output="screen"/> 
+
+    <!-- If 3d, start SAC segmentation -->
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="18 floor_removal sac.launch"
+        name="floor_removal" output="screen" if="$(optenv VECTOR_HAS_VLP16 false)"/>
+    
+</launch>

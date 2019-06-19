@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="limited" default="false"/>
+    <arg name="paused" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="world" default="worlds/empty.world"/>
+    <arg name="x"   default="0.0"/>
+    <arg name="y"   default="0.0"/>
+    <arg name="z"   value="1.5"/>
+    <arg name="wheel_type" value="$(optenv VECTOR_WHEEL_TYPE standard)"/>
+    
+    <param name="use_sim_time" value="true" />
+    
+    <node name="sim_start_patch" pkg="vector_gazebo" type="sim_start_patch" />
+
+    <node name="web_topics" pkg="si_utils" type="web_topics" >
+        <param name="sim" value="true"/>
+    </node> 
+
+	<!-- send robot urdf to param server -->
+	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find vector_description)/urdf/vector.urdf.xacro'" />
+	
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
+        <param name="publish_frequency" type="double" value="100.0" />
+        <param name="tf_prefix" value=""/>
+    </node>
+
+    <!-- startup simulated world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg world)"/>
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="gui" value="$(arg gui)"/>
+    </include>
+
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model rmp -x $(arg x) -y $(arg y) -z $(arg z)" respawn="false" output="screen" />
+
+    <node pkg="si_utils" type="timed_roslaunch"
+        args="5 vector_gazebo spawn_controllers.launch"
+        name="controller_spawners" output="screen"/>
+    
+    <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
+        <param name="destination_frame" value="base_link"/>
+        <param name="cloud_destination_topic" value="/vector/merged_cloud"/>
+        <param name="scan_destination_topic" value="/vector/combined_scan"/>
+        <param name="laserscan_topics" value ="/vector/front_scan /vector/rear_scan"/>
+        <!-- <param name="scan_time" type="double" value="0.0" /> -->
+    </node>
+    
+    <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="base_laser_filter" clear_params="true" respawn="true">
+        <remap from="scan" to="/vector/combined_scan" />
+        <remap from="scan_filtered" to="/vector/base_scan_filtered" />
+        <param name="target_frame" value="base_link" />
+        <param name="high_fidelity" value="true" />
+        <rosparam command="load" 
+            file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter.yaml" if="$(eval 1 if 'standard'==arg('wheel_type') else 0)"/>
+        <rosparam command="load" 
+            file="$(find vector_bringup)/launch/sensors/config/laser_scan_filter_HD.yaml" if="$(eval 1 if 'HD'==arg('wheel_type') else 0)"/>
+    </node>
+
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan" if="$(optenv VECTOR_HAS_VLP16 false)">
+            <remap from="cloud_in" to="/velodyne_points"/>
+            <remap from="scan" to="/scan_3d" />
+            <param name="min_height" value="-0.105" />
+            <param name="max_height" value="0.105" />
+            <param name="angle_min" value="-3.1416" /> <!-- -pi -->
+            <param name="angle_max" value="3.1416" /> <!-- pi -->
+            <param name="scan_time" value="0.2" />
+            <param name="range_max" value="80.0" />
+            <param name="range_min" value="0.6" />
+            <param name="use_inf" value="true" />
+        </node>
+
+    <node pkg="velodyne_laserscan" type="velodyne_laserscan_node" name="velodyne_level_scan" if="$(optenv VECTOR_HAS_VLP16 false)">
+        <remap from="/scan" to="/velodyne_middle_ring"/>
+    </node>
+    
+</launch>

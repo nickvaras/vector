@@ -244,7 +244,7 @@ class VectorTeleop(object):
             
             self._ctl_msg = DS4_Indication()
             self._ctl_msg.index = 1
-            self._pub = rospy.Publisher('/joy/indication',DS4_Indication,queue_size=1)
+            self._joy_indication_pub = rospy.Publisher('/joy/indication',DS4_Indication,queue_size=1)
             rospy.sleep(0.1)
             self._ctl_msg.big_rumble = 0xff
             self._ctl_msg.small_rumble = 0
@@ -253,10 +253,10 @@ class VectorTeleop(object):
             self._ctl_msg.led_blue = 0
             self._ctl_msg.flash_on = 0
             self._ctl_msg.flash_off = 0
-            self._pub.publish(self._ctl_msg)
+            self._joy_indication_pub.publish(self._ctl_msg)
             rospy.sleep(0.5)
             self._ctl_msg.big_rumble = 0
-            self._pub.publish(self._ctl_msg)
+            self._joy_indication_pub.publish(self._ctl_msg)
             rospy.sleep(0.5)
             
             self._subs.append(rospy.Subscriber("/joy/connection_status", DS4_ConnectionStatus, self._update_joy_status)) 
@@ -303,12 +303,32 @@ class VectorTeleop(object):
                     rospy.logwarn("Joystick reports weak signal....zeroing commands")   
                 self.zero_joy_commands = True
                 self.good_frames = 0
+            
+                self._ctl_msg.big_rumble = 0
+                self._ctl_msg.small_rumble = 0
+                self._ctl_msg.led_red = 120
+                self._ctl_msg.led_green = 0
+                self._ctl_msg.led_blue = 120
+                self._ctl_msg.flash_on = 10
+                self._ctl_msg.flash_off = 10
+                self._joy_indication_pub.publish(self._ctl_msg)
+
             elif self.zero_joy_commands and (msg.reports_per_second > 100) and (self.good_frames < 6):
                 self.good_frames += 1
                 if (self.good_frames > 6):
                     self.good_frames = 0
                     self.zero_joy_commands = False
                     rospy.logwarn("Joystick reports good signal....resuming teleop") 
+                
+                    self._ctl_msg.big_rumble = 0
+                    self._ctl_msg.small_rumble = 0
+                    self._ctl_msg.led_red = 0
+                    self._ctl_msg.led_green = 0xff
+                    self._ctl_msg.led_blue = 0
+                    self._ctl_msg.flash_on = 0
+                    self._ctl_msg.flash_off = 0
+                    self._joy_indication_pub.publish(self._ctl_msg)
+
             elif msg.connected and self.zero_joy_commands:
                 rospy.logwarn("Joystick connected....starting teleop")
                 self.zero_joy_commands = False
